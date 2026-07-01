@@ -33,7 +33,7 @@ wrangler secret put ALLOWED_ORIGINS
 Suggested `ALLOWED_ORIGINS` value:
 
 ```text
-https://dqgb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000
+https://dgqb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000
 ```
 
 ## Apply the schema
@@ -106,7 +106,7 @@ This starts:
 If the D1 database already exists, you can apply schema, seed the four members, and push Worker secrets with:
 
 ```bash
-SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dqgb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000" SEED_PASSCODES="alex=1111,sarah=2222,rahul=3333,maya=4444" npm run setup:remote
+SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dgqb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000" SEED_PASSCODES="alex=1111,sarah=2222,rahul=3333,maya=4444" npm run setup:remote
 ```
 
 If you later want attachment uploads, enable R2 separately:
@@ -127,7 +127,7 @@ This project will work without that step. In the current setup:
 If you want the script to first check `wrangler d1 info`, create the database if needed, and update the placeholder `database_id` in [`wrangler.jsonc`](/E:/code/friend/stitch_squad_fun_tracker/wrangler.jsonc), use:
 
 ```bash
-SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dqgb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000" SEED_PASSCODES="alex=1111,sarah=2222,rahul=3333,maya=4444" npm run bootstrap:cloudflare -- --update-config
+SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dgqb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000" SEED_PASSCODES="alex=1111,sarah=2222,rahul=3333,maya=4444" npm run bootstrap:cloudflare -- --update-config
 ```
 
 ## Production checklist

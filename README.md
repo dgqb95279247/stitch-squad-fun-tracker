@@ -50,7 +50,7 @@ https://friendcircle-api.1922554788.workers.dev
 Current intended GitHub Pages origin:
 
 ```text
-https://dqgb95279247.github.io
+https://dgqb95279247.github.io
 ```
 
 ## Cloudflare backend
@@ -109,7 +109,7 @@ npm run dev:local
 If your Cloudflare resources already exist, you can push schema, seed data, and Worker secrets with:
 
 ```bash
-SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dqgb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000" SEED_PASSCODES="alex=1111,sarah=2222,rahul=3333,maya=4444" npm run setup:remote
+SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dgqb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000" SEED_PASSCODES="alex=1111,sarah=2222,rahul=3333,maya=4444" npm run setup:remote
 ```
 
 If you later want to enable attachment uploads too, first add the `ATTACHMENTS` R2 binding back into [`wrangler.jsonc`](/E:/code/friend/stitch_squad_fun_tracker/wrangler.jsonc), then create the bucket:
@@ -121,7 +121,7 @@ wrangler r2 bucket create friendcircle-attachments
 If you want the project to automatically fetch or create the D1 database and write the real `database_id` back into [`wrangler.jsonc`](/E:/code/friend/stitch_squad_fun_tracker/wrangler.jsonc), run:
 
 ```bash
-SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dqgb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000" SEED_PASSCODES="alex=1111,sarah=2222,rahul=3333,maya=4444" npm run bootstrap:cloudflare -- --update-config
+SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dgqb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000" SEED_PASSCODES="alex=1111,sarah=2222,rahul=3333,maya=4444" npm run bootstrap:cloudflare -- --update-config
 ```
 
 ## Notes

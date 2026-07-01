@@ -9,7 +9,7 @@
     "head_sampling_rate": 1
   },
   "vars": {
-    "ALLOWED_ORIGINS": "https://dqgb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000"
+    "ALLOWED_ORIGINS": "https://dgqb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000"
   },
   "d1_databases": [
     {
