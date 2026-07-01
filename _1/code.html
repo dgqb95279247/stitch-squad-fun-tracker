@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>FriendCircle - Stats &amp; Leaderboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&amp;family=Quicksand:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#4edea3",
+                      "on-error": "#ffffff",
+                      "outline": "#727785",
+                      "on-surface-variant": "#424754",
+                      "on-primary": "#ffffff",
+                      "on-background": "#0b1c30",
+                      "surface-container-highest": "#d3e4fe",
+                      "background": "#f8f9ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-container": "#f5fff6",
+                      "primary-container": "#2170e4",
+                      "surface-bright": "#f8f9ff",
+                      "secondary-fixed": "#ffddb8",
+                      "primary": "#0058be",
+                      "secondary": "#855300",
+                      "surface-container-high": "#dce9ff",
+                      "inverse-surface": "#213145",
+                      "tertiary-fixed": "#6ffbbe",
+                      "inverse-primary": "#adc6ff",
+                      "on-secondary-fixed-variant": "#653e00",
+                      "on-primary-fixed-variant": "#004395",
+                      "on-primary-container": "#fefcff",
+                      "surface-dim": "#cbdbf5",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "on-secondary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "primary-fixed-dim": "#adc6ff",
+                      "secondary-container": "#fea619",
+                      "secondary-fixed-dim": "#ffb95f",
+                      "surface-container-low": "#eff4ff",
+                      "tertiary-container": "#00855b",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#c2c6d6",
+                      "surface-container": "#e5eeff",
+                      "surface-tint": "#005ac2",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#2a1700",
+                      "on-tertiary-fixed": "#002113",
+                      "on-secondary-container": "#684000",
+                      "tertiary": "#006947",
+                      "on-primary-fixed": "#001a42",
+                      "error-container": "#ffdad6",
+                      "on-surface": "#0b1c30",
+                      "surface-variant": "#d3e4fe",
+                      "primary-fixed": "#d8e2ff",
+                      "surface": "#f8f9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-md": "16px",
+                      "container-margin": "20px",
+                      "gutter": "16px",
+                      "unit": "4px",
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "safe": "env(safe-area-inset-bottom, 20px)"
+              },
+              "fontFamily": {
+                      "body-lg": ["Be Vietnam Pro"],
+                      "body-md": ["Be Vietnam Pro"],
+                      "headline-md": ["Quicksand"],
+                      "headline-lg-mobile": ["Quicksand"],
+                      "headline-lg": ["Quicksand"],
+                      "display-lg": ["Quicksand"],
+                      "label-sm": ["Be Vietnam Pro"],
+                      "label-md": ["Be Vietnam Pro"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .safe-pb { padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px)); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Ambient Shadows */
+        .shadow-ambient-lvl1 {
+            box-shadow: 0px 4px 20px rgba(59, 130, 246, 0.08);
+        }
+        .shadow-ambient-lvl2 {
+            box-shadow: 0px 8px 30px rgba(59, 130, 246, 0.15);
+        }
+        
+        /* Bar chart animations */
+        @keyframes growUp {
+            from { height: 0; }
+            to { height: var(--target-height); }
+        }
+        .bar-animate {
+            animation: growUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            transform-origin: bottom;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen relative overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar (Web & Mobile) -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md flex items-center justify-between px-container-margin h-16 w-full">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-ambient-lvl1 ring-2 ring-surface-container-high">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A close-up portrait of an active, smiling young adult looking ready for a game. Shot outdoors in bright, soft sunlight giving a vibrant, approachable vibe. The color palette features a bright blue jacket to match the primary brand color." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvXyZsqNo_-YaLnc1xJ5KCNtoU3FN9_WOMHL8-drEunxwbYsHOxBY4ch-12ZwvrvSd26JH83pA0TELF5CQckA1IJY46YawrHNN2wcAytEh1POfFBKW_hv4FXnC3E-hQeFtS-OKWSvfErIccZzTghallWOvuxiDZFY7brxZauNQRrkb6ujhtp_jI4S3mwMOufRugSLXMSbY747EvIXf4dqvTtHuBT-KkycUmBJS5NzKMn3P2i__h50iWdvFWsweiE1F0hYrCvBl3JY"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight md:font-headline-lg md:text-headline-lg">FriendCircle</h1>
+</div>
+<button class="p-2 text-primary hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- NavigationDrawer (Web Only) -->
+<aside class="hidden md:flex flex-col h-full py-stack-md w-80 rounded-r-xl bg-surface-bright shadow-xl fixed left-0 top-16 z-40 h-[calc(100vh-64px)] overflow-y-auto">
+<div class="px-6 mb-6">
+<div class="flex items-center gap-3 mb-2">
+<img alt="User profile" class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Small avatar for active session, showing a minimalist tile graphic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNx42_4yayM2cpj9un2MfDFviNw18g45yzJeHyt6eJ5BmEagWKFmzjlXwch1ME6Za67FLcsGzRCfkQnpaBaoOjKKurqDeoJQ9j_lbuTZeQhkEcXQrb41LzbdkBy-IHSaGAPO4DInAhO5Ep0F7BwoSp5eeTBlpvYsQ77PhBneoq0kzYUfqlqwD3yNwDi43FTs7BmJM3C0WXT7zT_wpUa6PXFFbMqvqmMsErxf4fjal80OAalVB6LRrdYm95D2j1dYT_dpDztRWwdaE"/>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary">Active Session</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Mahjong Night</p>
+</div>
+</div>
+<span class="text-xs text-outline font-label-sm uppercase tracking-wider">4 Players</span>
+</div>
+<nav class="flex flex-col gap-1 px-4">
+<!-- Non-matching intents go to inactive -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container m-2 rounded-lg p-3 transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-body-md text-body-md">Game History</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container m-2 rounded-lg p-3 transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-md text-body-md">Financials</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container m-2 rounded-lg p-3 transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md text-body-md">Groups</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container m-2 rounded-lg p-3 transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container m-2 rounded-lg p-3 transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Help</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 md:pl-84 px-container-margin md:px-8 max-w-7xl mx-auto min-h-screen">
+<!-- Header & Toggles -->
+<div class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary mb-2">排行榜</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">看看本月谁在称霸友圈</p>
+</div>
+<!-- Metric Toggle -->
+<div class="flex p-1 bg-surface-container-low rounded-xl shadow-inner border border-surface-variant shrink-0 w-full md:w-auto overflow-x-auto hide-scrollbar">
+<button class="flex-1 md:flex-none px-6 py-2 rounded-lg bg-white shadow-sm text-primary font-label-md text-label-md transition-all active:scale-95">胜率</button>
+<button class="flex-1 md:flex-none px-6 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest/50 font-label-md text-label-md transition-all active:scale-95">总胜场</button>
+<button class="flex-1 md:flex-none px-6 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest/50 font-label-md text-label-md transition-all active:scale-95">净收益</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Main Chart Area (Spans 8 cols on desktop) -->
+<section class="md:col-span-8 bg-surface-container-lowest rounded-[24px] p-6 shadow-ambient-lvl1 border border-surface-variant/50 relative overflow-hidden">
+<!-- Background ambient blob -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex justify-between items-center mb-8 relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface">胜率对比</h3>
+<div class="flex items-center gap-2 text-on-surface-variant bg-surface-container-low px-3 py-1 rounded-full text-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span> 所有游戏
+                    </div>
+</div>
+<!-- Custom Bar Chart Viz -->
+<div class="h-64 flex items-end justify-around gap-2 md:gap-4 mt-auto border-b-2 border-surface-variant pb-4 relative z-10 px-2 md:px-8">
+<!-- Grid lines -->
+<div class="absolute w-full top-0 border-t border-dashed border-surface-variant/50 h-0"></div>
+<div class="absolute w-full top-1/2 border-t border-dashed border-surface-variant/50 h-0"></div>
+<!-- Player 1 -->
+<div class="flex flex-col items-center gap-3 w-full max-w-[64px] group cursor-pointer">
+<div class="text-primary font-label-md text-label-md opacity-0 group-hover:opacity-100 transition-opacity -mb-2">68%</div>
+<div class="w-full bg-primary-container/30 rounded-t-xl relative overflow-hidden h-[180px]">
+<div class="absolute bottom-0 w-full bg-primary-container rounded-t-xl bar-animate" style="--target-height: 68%;"></div>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-lowest shadow-sm overflow-hidden mt-1 group-hover:ring-2 ring-primary transition-all">
+<img alt="Alex" class="w-full h-full object-cover" data-alt="Portrait of an Asian male with short hair, wearing a casual yellow hoodie, smiling slightly. Bright flat lighting, minimal background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhr9q0QhkBt3oS6fcmbQeyg9b6FXnqG_xKCLyDqPSYTJgdngAPxpP1yc-N08GEG_eplEqcZOaq36iXRS-bdJ8WWsevqVkABt5tVVdFSDoLuqkCSAhj-py6y_W_vOJ0aOis0OX9FEf1QcsnnT0fdQ25kgasvutqvoq7jGJiGsI6ctBMMw_hoQozvdf55P27ErZbX7UvMaGLQUOpn3V20n7Lmk1sXxTZJbi9yMzmxaHcW8yI1f2V3iemH1fVqH_ti2JdZL1AZJQy274"/>
+</div>
+</div>
+<!-- Player 2 -->
+<div class="flex flex-col items-center gap-3 w-full max-w-[64px] group cursor-pointer">
+<div class="text-tertiary font-label-md text-label-md opacity-0 group-hover:opacity-100 transition-opacity -mb-2">55%</div>
+<div class="w-full bg-tertiary-container/30 rounded-t-xl relative overflow-hidden h-[180px]">
+<div class="absolute bottom-0 w-full bg-tertiary-container rounded-t-xl bar-animate" style="--target-height: 55%;"></div>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-lowest shadow-sm overflow-hidden mt-1 group-hover:ring-2 ring-tertiary transition-all">
+<img alt="Sarah" class="w-full h-full object-cover" data-alt="Portrait of a young woman with curly hair, wearing trendy glasses and a soft green sweater. Warm studio lighting, happy expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFyJ0mxP_jYZflbH6PMZ-PtYKaiQjeJZ1ylXJzc6aVgzth7_vR0XgGwy3g7_QjcuJjIxRSTGNz0D3ukrCu5faB11h1sO5hKj2auIeuR5riPkw9L4U0uyIunA9sCiEC0dYV-y2KZ5oTTvk6Z3PBGJwC6bPnp_rfVjwNo81WmpUlNwWffcCaz54x3_Bw1KY6m5tw-yfLvh9NAggjcPlOFKFgEF4QqWt00CymQWt8LbALb2oLAVHlY31zhUdt0ZmDNZbBCRbP7dDnt6Q"/>
+</div>
+</div>
+<!-- Player 3 -->
+<div class="flex flex-col items-center gap-3 w-full max-w-[64px] group cursor-pointer">
+<div class="text-secondary font-label-md text-label-md opacity-0 group-hover:opacity-100 transition-opacity -mb-2">42%</div>
+<div class="w-full bg-secondary-container/30 rounded-t-xl relative overflow-hidden h-[180px]">
+<div class="absolute bottom-0 w-full bg-secondary-container rounded-t-xl bar-animate" style="--target-height: 42%;"></div>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-lowest shadow-sm overflow-hidden mt-1 group-hover:ring-2 ring-secondary transition-all relative">
+<img alt="Mike" class="w-full h-full object-cover" data-alt="Portrait of a guy wearing a backwards baseball cap and a white t-shirt. Candid style, slight grin. Soft neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaSzbg74qIj5S6e95ImjcZ8KqFbCADLlGpuEF8Va4yFxC7oFthwC5iPg-dnKKbDtlOwW5v64w3CIZtn26A5O9TmcCyHsnVr94OdGo1R5wjnsoCzfRm07JqjGNcMaHHiqpb8XcRPWXDczJhrHPnhVuNrJUXUlyQ6T6w3_7iY1x4AlXe1M_xVgybUV9n6IUXxPPp_JlGahCPtxGULHLjNSA9iMJTVZXHNukPYguUms5V8lEwLaNdnS23aiaFXLzl3bOOsviqH7qS360"/>
+</div>
+</div>
+<!-- Player 4 -->
+<div class="flex flex-col items-center gap-3 w-full max-w-[64px] group cursor-pointer">
+<div class="text-on-surface-variant font-label-md text-label-md opacity-0 group-hover:opacity-100 transition-opacity -mb-2">35%</div>
+<div class="w-full bg-surface-variant rounded-t-xl relative overflow-hidden h-[180px]">
+<div class="absolute bottom-0 w-full bg-outline-variant rounded-t-xl bar-animate" style="--target-height: 35%;"></div>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-lowest shadow-sm overflow-hidden mt-1 group-hover:ring-2 ring-outline-variant transition-all">
+<img alt="Chloe" class="w-full h-full object-cover" data-alt="Portrait of a Black woman with natural hair styled in a puff, wearing simple gold hoops and a navy top. Looking focused and relaxed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG5CYgdZyRGP-1Ef1daMTJj4OpomvBmEyh3C6AC-i61fuSgve9A5cVTZviMJIhsVLMX2luudPclCF2OE5lfmUgQ_NlWuPqkTnMWc18mdCcOTfMMBXFtR0yz3tQDBUuFbH05p3q-S4c-jWgiNk-oQcv4A27wkk-_ccep-nkYWY67DS_Yafuz4fSE7fu34orIjmK2jZ9TiJTk5jO14144rKh_wekgEAX3-KERrNYCTCfnICkhaWodVo_bYwSW0t90Cpl6aAsGRfU6E8"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Friend Rank (Spans 4 cols on desktop) -->
+<section class="md:col-span-4 bg-primary rounded-[24px] p-6 shadow-ambient-lvl2 text-on-primary relative overflow-hidden flex flex-col">
+<!-- Abstract waves background using tailwind gradients -->
+<div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+<h3 class="font-headline-md text-headline-md mb-6 relative z-10 flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">trophy</span>
+                    当前排名
+                </h3>
+<div class="flex flex-col gap-4 relative z-10 grow justify-center">
+<!-- Rank 1 -->
+<div class="flex items-center gap-4 bg-white/10 p-3 rounded-xl backdrop-blur-sm border border-white/20">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-headline-md font-bold shrink-0">1</div>
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-white/50">
+<img alt="Alex" class="w-full h-full object-cover" data-alt="Portrait of an Asian male with short hair, wearing a casual yellow hoodie, smiling slightly. Bright flat lighting, minimal background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsrgwSOa-uWUiKyy6Urf7ZZ6LtDZDC-8EAGvNo08j28yTyJJe3PylkVWmHAc42Tmt8eNR29R-dQPQ9PmcKQ9MJ-MtRbXKcjkqn5hKzzs2i5TjiNzVi1w1PlaiOvzXFUVYsDNjXWwKLdbUbQ_N2aX8jRb_thUJit06MK1i4_oqsQ7YSjrhGd19Ho_3e0NBCQmTQAVjA25-HBdv4tmqlO8jKIl8Rp14jqx2_YzDmLbMgF5HRz17Ynz0hQYhT7M_px5aiRDi5OiMgjx0"/>
+</div>
+<div class="grow">
+<h4 class="font-headline-md text-base leading-tight">Alex</h4>
+<p class="font-body-md text-sm text-on-primary/80">68% Win Rate</p>
+</div>
+<div class="shrink-0 text-secondary-fixed">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+</div>
+<!-- Rank 2 -->
+<div class="flex items-center gap-4 p-2 pl-4">
+<div class="w-6 font-headline-md font-bold text-on-primary/70 shrink-0 text-center">2</div>
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-white/30 opacity-90">
+<img alt="Sarah" class="w-full h-full object-cover" data-alt="Portrait of a young woman with curly hair, wearing trendy glasses and a soft green sweater. Warm studio lighting, happy expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4vi1uIzrOPBhhojuCABaKcm8ExRjTuMClyLbCN_1JyeHEv045xHd8IfV_puqcSojytSFkgW8_MRmw_Me5ps7I5Qw0frVaFsuZ9_k_tnWSMQ37JA8qkdd68T6TRE0aYM6GWWSBXkRHIW9i2rGjkDPRqOek4HuzIqsQjgmPE-455tDr5j1gB9IJZ4-xFu0J_fdgJD4fpt8wrK7b0y9bqZH_wbfwY8Xh8D3zuQ6iC9G7NzGzVG2xwuiV8KscNb8yx1U3fJ-nZ4xcmqM"/>
+</div>
+<div class="grow">
+<h4 class="font-headline-md text-base leading-tight opacity-90">Sarah</h4>
+<p class="font-body-md text-xs text-on-primary/70">55% Win Rate</p>
+</div>
+</div>
+<!-- Rank 3 & 4 compressed for space -->
+<div class="flex items-center gap-4 p-2 pl-4">
+<div class="w-6 font-headline-md font-bold text-on-primary/50 shrink-0 text-center">3</div>
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-white/20 opacity-70">
+<img alt="Mike" class="w-full h-full object-cover" data-alt="Portrait of a guy wearing a backwards baseball cap and a white t-shirt. Candid style, slight grin. Soft neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaBv7J3MbdBwfFPsyZkJimYmzEbDVjm9hi3qtaBJUNclx6Xq_MhedPQOzI5dDMMqgp-hqi-MOWfd89FUn7Y2ok2My5lUTHn7nXjMPQEalOljPlUQUgM3eSr7laVarpjtN-mgEjiwoh5sE6MwtLYeMzKloQZC67c_bGA8DMvNPhPy8rKWSRHMz5snyeBEDMTQnyfK3nZhNPpUIjl43pmBMrJ75F7erTqZ5grigDL32XiNPaoVq6MXVyQnuZJy8zKt0bl5Q_OfLvlcQ"/>
+</div>
+<div class="grow">
+<h4 class="font-headline-md text-base leading-tight opacity-70">Mike</h4>
+</div>
+</div>
+</div>
+</section>
+<!-- Financial Flow (Spans full width) -->
+<section class="md:col-span-12 bg-surface-container-lowest rounded-[24px] p-6 shadow-ambient-lvl1 border border-surface-variant/50 mt-4">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-container" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                            资金流向
+                        </h3>
+<p class="font-body-md text-sm text-on-surface-variant">基于近期分摊的欠款情况</p>
+</div>
+<button class="text-primary font-label-md text-label-md hover:bg-surface-container-low px-4 py-2 rounded-lg transition-colors">结算清账</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Debt Card 1 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-surface-variant/50 group hover:shadow-ambient-lvl1 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Mike" class="w-10 h-10 rounded-full object-cover border border-surface-variant" data-alt="Portrait of a guy wearing a backwards baseball cap and a white t-shirt. Candid style, slight grin. Soft neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS_PLhcqkseo5b8WUfkIF31BllGn6nxPv445JwURwVEqJzEsU1cL-2TpTeHAwlOuX9iB4v5MLjSlgiQ7RnrvdGgGIksnQR7DF9dYjWEtzDfbSRRwj__Dk3ytiuxY1AjMV7lFBmEDTGzpmC_VpxV9F4Wm2OiTlgg4JvUNiWDSPmNr4N255PI3GxbIWk9hJneOA_YxiYs91Si-Jrqtl1832OvnVTJNl4LLFKWBCUyRnHptPjkAfnAOBj_h36Boc0oked4mSstky49wc"/>
+<span class="absolute -bottom-1 -right-1 material-symbols-outlined text-[16px] text-error bg-surface-container-lowest rounded-full p-[1px]">arrow_outward</span>
+</div>
+<div class="w-8 border-t-2 border-dashed border-outline-variant relative">
+<span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-label-sm text-outline">欠</span>
+</div>
+<div class="relative">
+<img alt="Chloe" class="w-10 h-10 rounded-full object-cover border border-surface-variant" data-alt="Portrait of a Black woman with natural hair styled in a puff, wearing simple gold hoops and a navy top. Looking focused and relaxed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB10yFjo4y2jDlEAnpf-uLkFt4R4o6qOkrARhKnc8aePxweqV21ecHWLzP_92KLXn0Id7yKMCyGnWzkdBQ4FPj62eH7CzdmVr6dTkFMSbHmNTq0HonA6kvv82EqDPPZ6X05RyeB_phpSsds7kHG0a05VwMvmfrZ5Ap2gmCAThujHkiGm7BSYcnkKQBx7LEHtNDdY1VEtUCfybrR2eHxozG11zlA_S0uku7m8-KUo8wQjh8ea5nt1v_zRpyYmuBcI_puR2noqYeK6O0"/>
+</div>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-error">$45.00</div>
+<div class="font-body-md text-xs text-on-surface-variant">晚餐 + 饮料</div>
+</div>
+</div>
+<!-- Debt Card 2 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-surface-variant/50 group hover:shadow-ambient-lvl1 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Sarah" class="w-10 h-10 rounded-full object-cover border border-surface-variant" data-alt="Portrait of a young woman with curly hair, wearing trendy glasses and a soft green sweater. Warm studio lighting, happy expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMJfD4SrLjVWq2DmZzqzGxbyNUKJh3-WcBnWDzK4uE6ItCYFjRkcg2lLHPb10wgUgkywtUZ3QUQdPfeRcdaxQ6SjmBjTZphTN4eP54soUQED0xs8XcaHso8QYnJYbBWoBOYV2mO65tULtkBXzsgj-9bg8PD5y-SWA3OTB8SECr6I15T8BmQ2WVJs_DsAasKq_u7H2e-AUX3-P9yY7H1mXKDq2-gB1sl1OIYcdDszPlSwKPv_p55M46X4U-A1qOh-YCwD-Vfbxlb8I"/>
+<span class="absolute -bottom-1 -right-1 material-symbols-outlined text-[16px] text-tertiary bg-surface-container-lowest rounded-full p-[1px]">south_east</span>
+</div>
+<div class="w-8 border-t-2 border-dashed border-outline-variant relative">
+<span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-label-sm text-outline">欠</span>
+</div>
+<div class="relative">
+<!-- Self indicator -->
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden">
+<img alt="You" class="w-full h-full object-cover" data-alt="A close-up portrait of an active, smiling young adult looking ready for a game. Shot outdoors in bright, soft sunlight giving a vibrant, approachable vibe. The color palette features a bright blue jacket to match the primary brand color." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsmA2Krj9PeGlnWXrxLvs2qM1tWlr_oVY9g4MssCk6ckVFveLkWonoBMBpPa-d9NmXF2Q0Mhm_RPpr2L1LsE9aCWPCCa9p7iPTOMA8l2kcE3Fs7Lw_trhMEIt-wO3Z3qQK6MRCFqs0YTrr1cahYMKQh4Nnnh5j8a6t4XjEW8mlddOva6yduu19ozaKzVSNeTDaDvY-8LPHnSkQl7oBJTfxV0U1J8xo_qmELKBTtqPs077CA0ygpNH_OpCJNxL6cebvUppaA4xp-nU"/>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-tertiary">+$12.50</div>
+<div class="font-body-md text-xs text-on-surface-variant">麻将买入</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<!-- The prompt says: BottomNavBar with 'Stats' active. -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_-4px_20px_rgba(0,88,190,0.08)] rounded-t-xl z-50">
+<!-- Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all active:scale-90 duration-150 rounded-full" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- Stats (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">leaderboard</span>
+<span class="font-label-sm text-label-sm mt-1">Stats</span>
+</a>
+<!-- Record (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all active:scale-90 duration-150 rounded-full" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-label-sm text-label-sm mt-1">Record</span>
+</a>
+<!-- Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all active:scale-90 duration-150 rounded-full" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

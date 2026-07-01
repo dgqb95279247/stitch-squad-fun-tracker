@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>FriendCircle - 记录活动</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&amp;family=Quicksand:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-error": "#ffffff",
+                        "outline": "#727785",
+                        "on-surface-variant": "#424754",
+                        "on-primary": "#ffffff",
+                        "on-background": "#0b1c30",
+                        "surface-container-highest": "#d3e4fe",
+                        "background": "#f8f9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#f5fff6",
+                        "primary-container": "#2170e4",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed": "#ffddb8",
+                        "primary": "#0058be",
+                        "secondary": "#855300",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-surface": "#213145",
+                        "tertiary-fixed": "#6ffbbe",
+                        "inverse-primary": "#adc6ff",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-primary-container": "#fefcff",
+                        "surface-dim": "#cbdbf5",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-container": "#fea619",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "surface-container-low": "#eff4ff",
+                        "tertiary-container": "#00855b",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c2c6d6",
+                        "surface-container": "#e5eeff",
+                        "surface-tint": "#005ac2",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-tertiary-fixed": "#002113",
+                        "on-secondary-container": "#684000",
+                        "tertiary": "#006947",
+                        "on-primary-fixed": "#001a42",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#0b1c30",
+                        "surface-variant": "#d3e4fe",
+                        "primary-fixed": "#d8e2ff",
+                        "surface": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "container-margin": "20px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Be Vietnam Pro"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-md": ["Quicksand"],
+                        "headline-lg-mobile": ["Quicksand"],
+                        "headline-lg": ["Quicksand"],
+                        "display-lg": ["Quicksand"],
+                        "label-sm": ["Be Vietnam Pro"],
+                        "label-md": ["Be Vietnam Pro"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col pt-16 pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md flex items-center justify-between px-container-margin h-16 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high shrink-0">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A small, circular avatar portrait of a modern, stylish user in a soft, bright lighting setup, vibrant and approachable, matching a light-mode modern UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTONC_KZ3IFpfYsf49S8SifdkpyGxZ1ljMDzvsJdXhEcvRNFJBelgIPshzgqi_64A2bEvUw85Nv__EBcsRFB9eT2sYzNTIZOw57aZ7I95n_5iPcOiF2XuxQImdFYbDbeeTnvFTYZy8Qjs5CWlzuYCvz2eipfkBjEiKo9XxnDS4qweio3MxNfTyHK26f1ymCcg-2Zt-6S2xMzxCsOuOPmgP4hrinMUNQKBu9Wc_BQL0b9STdnufGotMjUMJp2bFOOr7nla9JGz1bgw"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">FriendCircle</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low active:scale-95 transition-transform duration-200 text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 400;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-container-margin py-stack-md flex flex-col gap-stack-lg max-w-2xl mx-auto w-full">
+<div class="space-y-2">
+<h2 class="font-headline-md text-headline-md text-on-surface">记录活动</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">记录一场新的对局或活动</p>
+</div>
+<!-- Form Layout -->
+<form class="flex flex-col gap-stack-md">
+<!-- Game Selection -->
+<section class="flex flex-col gap-stack-sm">
+<label class="font-label-md text-label-md text-on-surface-variant px-1">游戏类型</label>
+<div class="flex gap-gutter overflow-x-auto no-scrollbar pb-2 px-1 -mx-1 snap-x">
+<button class="snap-start shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(59,130,246,0.08)] border border-primary/20 ring-2 ring-primary relative overflow-hidden transition-transform active:scale-95 w-24" type="button">
+<div class="absolute inset-0 bg-primary/10"></div>
+<div class="w-12 h-12 rounded-full bg-tertiary-container/20 text-tertiary flex items-center justify-center relative z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300; font-size: 28px;">grid_view</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary relative z-10">麻将</span>
+</button>
+<button class="snap-start shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(59,130,246,0.08)] border border-transparent hover:bg-surface-container-low transition-transform active:scale-95 w-24" type="button">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300; font-size: 28px;">style</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">扑克</span>
+</button>
+<button class="snap-start shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(59,130,246,0.08)] border border-transparent hover:bg-surface-container-low transition-transform active:scale-95 w-24" type="button">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300; font-size: 28px;">casino</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">桌游</span>
+</button>
+<button class="snap-start shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(59,130,246,0.08)] border border-transparent hover:bg-surface-container-low transition-transform active:scale-95 w-24" type="button">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300; font-size: 28px;">sports_esports</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">电玩</span>
+</button>
+<button class="snap-start shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(59,130,246,0.08)] border border-transparent hover:bg-surface-container-low transition-transform active:scale-95 w-24" type="button">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300; font-size: 28px;">edit</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">自定义</span>
+</button>
+</div>
+</section>
+<!-- Participants -->
+<section class="flex flex-col gap-stack-sm bg-surface-container-lowest p-4 rounded-xl shadow-[0px_4px_20px_rgba(59,130,246,0.08)]">
+<div class="flex justify-between items-center mb-2">
+<label class="font-label-md text-label-md text-on-surface-variant">参与者 (最多4人)</label>
+<span class="font-label-sm text-label-sm text-primary">编辑</span>
+</div>
+<div class="flex justify-between">
+<!-- Participant 1 (Selected) -->
+<div class="flex flex-col items-center gap-1 cursor-pointer">
+<div class="w-14 h-14 rounded-full p-[2px] bg-primary">
+<div class="w-full h-full rounded-full border-2 border-surface-container-lowest overflow-hidden">
+<img alt="Alex" class="w-full h-full object-cover" data-alt="Avatar portrait of a smiling young woman with short dark hair in a bright outdoor setting, soft lighting, vibrant." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOwYcGEl10IYT0XdxyI8zPAv5F9pvUjv5rVjAeh_tpH3WUvUc_aVvX1-hEuJA_KCoyF-wgLx3r_czEn6yAdyAi7fTamlySFhujW5UzsrYni7HR8GQJKhLdg5MHjcP5GKAYyaDJ8EQdVglU4qrKs-XKb_Tz7xLwYMrhmihl3_Ctg3qxxtERcwq_0lDxWazexDTwjOwTFWsTMi8UQgs7QWb01JceI8bgR7gVtbXp89rdm8PzDA-m0Uldl-rvW7lZWjilLRjrFGEL7IU"/>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface">Alex (你)</span>
+</div>
+<!-- Participant 2 (Selected) -->
+<div class="flex flex-col items-center gap-1 cursor-pointer">
+<div class="w-14 h-14 rounded-full p-[2px] bg-primary">
+<div class="w-full h-full rounded-full border-2 border-surface-container-lowest overflow-hidden">
+<img alt="Ben" class="w-full h-full object-cover" data-alt="Avatar portrait of a young man with a slight beard wearing glasses, warm studio lighting, friendly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Xtpn5kTkHw1eN-TlUa2k3efvAc1Q90_mf5po96peqT5VQsOH_Mvp0EFfgXgvTo87Jm5ALKGY5-dFkscdd-ovfdNEqGQ_WkVPen6s6akVUDhs4zG1P-JWizjL4PIkYnxqtZY8CniSKZfKTn-1lrHuuy4mwu3yC36isoiZS1wmgLIWYTgtYBoNCnNMyvYKcSYFSiZc0keZGX6kOkoqqNclLPhbEkqZyRMu83PtlwrdVnX6i9X_Tu9Q6v-xyAKrcmgCF2VS8CGMNL0"/>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface">Ben</span>
+</div>
+<!-- Participant 3 (Selected) -->
+<div class="flex flex-col items-center gap-1 cursor-pointer">
+<div class="w-14 h-14 rounded-full p-[2px] bg-primary">
+<div class="w-full h-full rounded-full border-2 border-surface-container-lowest overflow-hidden">
+<img alt="Chloe" class="w-full h-full object-cover" data-alt="Avatar portrait of a stylish person with brightly colored hair, neutral clean background, modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGkYUL9_deY7GWdYcoHznzJB1pqEd-aFP6zRb1VMzkvFllOIAoeE7Yuehe_010ph7PyOLy30l7x2jb7msi_nzIZmVlyHJKbfDDCknfD54R0U9lznRSLiLlERbJOL88qXxL1i_J1aLE59cDBe0cOF0axDuo-FKubE5YAu0oSFWm5e5H9f0l-A5dHFZ4Y0nIZH6NvfLahWiRSsVkU8LSCOB_rxkQX4tIfmuxaRogrF_bDww7VhOnWvg2D_Vwdt1Vl6XN7OxnhxmDLC8"/>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface">Chloe</span>
+</div>
+<!-- Participant 4 (Unselected) -->
+<div class="flex flex-col items-center gap-1 cursor-pointer opacity-50">
+<div class="w-14 h-14 rounded-full p-[2px] bg-outline-variant">
+<div class="w-full h-full rounded-full border-2 border-surface-container-lowest overflow-hidden bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">add</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">添加</span>
+</div>
+</div>
+</section>
+<!-- Location Check-in -->
+<section class="flex flex-col gap-stack-sm">
+<label class="font-label-md text-label-md text-on-surface-variant px-1">地点打卡</label>
+<button class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center justify-start gap-3 hover:bg-surface-container-low transition-colors text-on-surface-variant active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 400;">location_on</span>
+<span class="font-body-md text-body-md text-on-surface">添加位置</span>
+</button>
+</section>
+<!-- Media Upload -->
+<section class="flex flex-col gap-stack-sm">
+<label class="font-label-md text-label-md text-on-surface-variant px-1">精彩瞬间 (可选)</label>
+<div class="w-full h-32 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-low transition-colors text-on-surface-variant active:scale-[0.98]">
+<span class="material-symbols-outlined" style="font-size: 32px; font-variation-settings: 'wght' 300;">add_a_photo</span>
+<span class="font-label-sm text-label-sm">添加照片</span>
+</div>
+</section>
+<!-- Save Action -->
+<div class="mt-4 pb-4">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md h-12 rounded-xl shadow-[0px_8px_30px_rgba(59,130,246,0.15)] hover:bg-surface-tint active:scale-95 transition-all flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 400;">save</span>
+                    保存记录
+                </button>
+</div>
+</form>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest shadow-[0px_-4px_20px_rgba(0,88,190,0.08)] rounded-t-xl z-50 md:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-150 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 400;">home</span>
+<span class="font-label-sm text-label-sm mt-1">主页</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-150 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 400;">leaderboard</span>
+<span class="font-label-sm text-label-sm mt-1">统计</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400;">add_circle</span>
+<span class="font-label-sm text-label-sm mt-1">记录</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-150 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 400;">person</span>
+<span class="font-label-sm text-label-sm mt-1">我的</span>
+</button>
+</nav>
+</body></html>

@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "friendcircle-api",
+  "main": "worker/src/index.js",
+  "compatibility_date": "2026-07-01",
+  "compatibility_flags": ["nodejs_compat_v2"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://dqgb95279247.github.io,http://localhost:8000,http://127.0.0.1:8000"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "friendcircle-db",
+      "database_id": "ddf899cf-c416-4826-ae82-e9655e59c5a2",
+      "migrations_dir": "worker/src/db"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "friendcircle-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:pages": "node scripts/export-pages.mjs",
+    "bootstrap:cloudflare": "node scripts/bootstrap-cloudflare.mjs",
+    "dev:local": "node scripts/dev-local.mjs",
+    "dev:site": "node scripts/dev-static.mjs",
+    "dev:worker": "wrangler dev",
+    "seed:sql": "node scripts/generate-seed-sql.mjs",
+    "setup:local": "node scripts/setup-local-d1.mjs",
+    "setup:remote": "node scripts/setup-remote.mjs",
+    "test": "node --test tests/site.test.mjs tests/content.test.mjs tests/worker.test.mjs tests/frontend-api.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.105.0"
+  }
+}
