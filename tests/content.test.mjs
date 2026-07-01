@@ -43,6 +43,7 @@ test('stats page contains stats render targets', () => {
   assert.match(html, /data-render="leaderboard"/);
   assert.match(html, /data-render="settlements"/);
   assert.match(html, /data-render="stats-summary"/);
+  assert.doesNotMatch(html, /desktop-drawer/);
 });
 
 test('record page contains record form and upload controls', () => {
@@ -53,6 +54,8 @@ test('record page contains record form and upload controls', () => {
   assert.match(html, /name="activity_type"/);
   assert.match(html, /name="activity_date"/);
   assert.match(html, /type="file"/);
+  assert.match(html, /data-use-location/);
+  assert.match(html, /data-map-link/);
 });
 
 test('detail page contains detail, settlement, comment, and attachment render targets', () => {
@@ -65,4 +68,6 @@ test('detail page contains detail, settlement, comment, and attachment render ta
   assert.match(html, /data-render="comments"/);
   assert.match(html, /data-render="attachments"/);
   assert.match(html, /data-comment-form/);
+  assert.match(html, /data-emoji/);
+  assert.match(html, /name="gif_url"/);
 });

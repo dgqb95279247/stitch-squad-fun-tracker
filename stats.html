@@ -11,20 +11,6 @@
     <link rel="stylesheet" href="assets/css/site.css" />
   </head>
   <body data-page="stats">
-    <aside class="desktop-drawer" aria-label="统计导航">
-      <div class="drawer-session">
-        <span class="avatar avatar--blue">局</span>
-        <div>
-          <strong>Active Session</strong>
-          <span data-render="stats-summary">等待同步</span>
-        </div>
-      </div>
-      <a href="index.html"><span class="material-symbols-outlined">home</span>首页</a>
-      <a class="is-active" href="stats.html"><span class="material-symbols-outlined">leaderboard</span>排行榜</a>
-      <a href="record.html"><span class="material-symbols-outlined">add_circle</span>记录活动</a>
-      <a href="detail.html"><span class="material-symbols-outlined">receipt_long</span>活动详情</a>
-    </aside>
-
     <main class="app-shell app-shell--stats">
       <header class="app-topbar">
         <a class="brand-lockup" href="index.html" aria-label="FriendCircle 首页">
@@ -39,6 +25,7 @@
       <section class="page-title">
         <h1>排行榜</h1>
         <p>看看本月谁在称霸友圈</p>
+        <p class="stats-summary-inline" data-render="stats-summary">等待同步</p>
       </section>
 
       <div class="segmented-control" aria-label="统计指标">

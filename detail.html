@@ -40,7 +40,7 @@
       <section class="card detail-card">
         <div class="card-heading">
           <h2><span class="material-symbols-outlined">receipt_long</span>零食与饮料</h2>
-          <strong class="detail-total">$54.00</strong>
+          <strong class="detail-total">¥54.00</strong>
         </div>
         <div class="settlement-list" data-render="settlements"></div>
       </section>
@@ -59,6 +59,15 @@
         </div>
         <div class="comment-list" data-render="comments"></div>
         <form class="comment-form" data-comment-form>
+          <div class="comment-tools" aria-label="表情和 GIF">
+            <button type="button" data-emoji="😄" aria-label="添加笑脸">😄</button>
+            <button type="button" data-emoji="🎉" aria-label="添加庆祝">🎉</button>
+            <button type="button" data-emoji="🀄" aria-label="添加麻将">🀄</button>
+            <label class="gif-field">
+              <span class="material-symbols-outlined">gif_box</span>
+              <input name="gif_url" type="url" placeholder="GIF 链接" inputmode="url" />
+            </label>
+          </div>
           <textarea name="comment_body" placeholder="说点什么..." rows="1"></textarea>
           <p class="form-message" data-comment-message>评论会同步给所有成员。</p>
           <button class="send-button" type="submit" aria-label="发送评论">

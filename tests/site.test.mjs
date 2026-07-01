@@ -57,6 +57,8 @@ test('shared stylesheet defines core design tokens and responsive layout hooks',
   assert.match(css, /\.auth-gate/);
   assert.match(css, /\.form-message/);
   assert.match(css, /@media\s*\(min-width:\s*860px\)/);
+  assert.doesNotMatch(css, /\.bottom-nav\s*\{\s*display:\s*none/i);
+  assert.doesNotMatch(css, /\.app-shell--stats\s*\{[\s\S]*?padding-left:\s*360px/i);
 });
 
 test('readme explains local preview and deployment flows', () => {

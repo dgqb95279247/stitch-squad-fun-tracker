@@ -18,6 +18,10 @@ const TEXT = {
   saveFailed: '保存失败，请稍后再试',
   commentSuccess: '评论已提交，刷新后可见',
   commentFailed: '评论提交失败',
+  locationInProgress: '正在定位...',
+  locationSuccess: '已写入当前位置，可打开地图确认',
+  locationUnsupported: '当前浏览器不支持定位，请手动输入地点',
+  locationFailed: '定位失败，请手动输入地点',
   attachmentsDisabled: '当前先不开启附件功能，文字记录和评论仍可正常使用',
   noDetail: '当前还没有可查看的活动',
   noScores: '暂无得分数据',
@@ -177,7 +181,32 @@ export function formatCurrency(value) {
   const amount = Number(value || 0);
   const absolute = Math.abs(amount).toFixed(2);
   const sign = amount > 0 ? '+' : amount < 0 ? '-' : '';
-  return `${sign}$${absolute}`;
+  return `${sign}¥${absolute}`;
+}
+
+export function formatCoordinates(coords) {
+  const latitude = Number(coords?.latitude);
+  const longitude = Number(coords?.longitude);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return '';
+  }
+
+  return `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+}
+
+export function buildMapSearchUrl(query) {
+  const value = String(query || '').trim();
+  return `https://ditu.amap.com/search?query=${encodeURIComponent(value || '当前位置')}`;
+}
+
+export function buildMapMarkerUrl(coords, label = '友圈打卡位置') {
+  const latitude = Number(coords?.latitude);
+  const longitude = Number(coords?.longitude);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return buildMapSearchUrl(label);
+  }
+
+  return `https://uri.amap.com/marker?position=${longitude.toFixed(6)},${latitude.toFixed(6)}&name=${encodeURIComponent(label)}`;
 }
 
 export function renderAvatarGroup(members) {
@@ -244,7 +273,7 @@ export function renderActivityCards(activities) {
       const memberCount = Array.isArray(activity.participants) ? activity.participants.length : activity.players || 4;
       const winner = activity.winner || activity.created_by_name || activity.created_by || fallbackMembers[index % fallbackMembers.length].display_name;
       const metricLabel = activity.pot ? '总奖池' : index % 2 === 0 ? '总奖池' : '时长';
-      const metricValue = activity.pot ? `$${Number(activity.pot).toFixed(2)}` : index % 2 === 0 ? '$120.00' : escapeHtml(activity.duration || '2.5 小时');
+      const metricValue = activity.pot ? formatCurrency(activity.pot).replace(/^\+/, '') : index % 2 === 0 ? '¥120.00' : escapeHtml(activity.duration || '2.5 小时');
       const href = `detail.html?activity=${encodeURIComponent(activity.id || DEFAULT_DETAIL_ID)}`;
 
       return `
@@ -485,6 +514,29 @@ function renderLeaderboard(members = fallbackMembers) {
     .join('');
 }
 
+function isGifUrl(value) {
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) && /\.gif(?:$|[?#])/i.test(url.href);
+  } catch {
+    return false;
+  }
+}
+
+export function renderCommentBody(body) {
+  const parts = String(body || '').split(/(https?:\/\/[^\s]+)/g);
+  return parts
+    .map((part) => {
+      if (isGifUrl(part)) {
+        const url = escapeHtml(part);
+        return `<img class="comment-gif" src="${url}" alt="GIF 表情" loading="lazy" />`;
+      }
+
+      return escapeHtml(part).replaceAll('\n', '<br />');
+    })
+    .join('');
+}
+
 function renderComments(comments = []) {
   if (!comments.length) {
     return `
@@ -492,14 +544,14 @@ function renderComments(comments = []) {
         ${avatarMarkup('Alex')}
         <div class="comment-bubble">
           <strong>Alex</strong>
-          <p>I demand a rematch next week. The dice were clearly rigged!</p>
+          <p>${renderCommentBody('I demand a rematch next week 😄')}</p>
         </div>
       </article>
       <article class="comment-card">
         ${avatarMarkup('Sarah')}
         <div class="comment-bubble">
           <strong>Sarah</strong>
-          <p>下次继续，我负责订零食。</p>
+          <p>${renderCommentBody('下次继续，我负责订零食。')}</p>
         </div>
       </article>
     `;
@@ -513,7 +565,7 @@ function renderComments(comments = []) {
           ${avatarMarkup(name)}
           <div class="comment-bubble">
             <strong>${escapeHtml(name)}</strong>
-            <p>${escapeHtml(comment.body)}</p>
+            <p>${renderCommentBody(comment.body)}</p>
           </div>
         </article>
       `;
@@ -561,7 +613,7 @@ export function renderScoreRows(scores = []) {
           ${avatarMarkup('Alex')}
           <strong>${TEXT.noScores}</strong>
         </span>
-        <strong class="balance-neutral">$0.00</strong>
+        <strong class="balance-neutral">${formatCurrency(0)}</strong>
       </div>
     `;
   }
@@ -599,7 +651,7 @@ export function renderSettlementCards(settlements = []) {
           ${avatarMarkup('Maya')}
         </div>
         <div>
-          <strong class="balance-negative">$45.00</strong>
+          <strong class="balance-negative">${formatCurrency(-45)}</strong>
           <p>晚餐 + 饮料</p>
         </div>
       </article>
@@ -610,7 +662,7 @@ export function renderSettlementCards(settlements = []) {
           ${avatarMarkup('Alex')}
         </div>
         <div>
-          <strong class="balance-positive">+$12.50</strong>
+          <strong class="balance-positive">${formatCurrency(12.5)}</strong>
           <p>麻将买入</p>
         </div>
       </article>
@@ -749,6 +801,57 @@ function bindTypeOptions() {
   });
 }
 
+function refreshMapLink(input, link) {
+  if (!input || !link) {
+    return;
+  }
+
+  const value = input.value.trim();
+  link.href = buildMapSearchUrl(value);
+  link.toggleAttribute('hidden', !value);
+}
+
+function bindLocationTools() {
+  const input = document.querySelector('[name="location"]');
+  const button = document.querySelector('[data-use-location]');
+  const link = document.querySelector('[data-map-link]');
+  const status = document.querySelector('[data-location-status]');
+
+  refreshMapLink(input, link);
+  input?.addEventListener('input', () => refreshMapLink(input, link));
+
+  if (!button || !input) {
+    return;
+  }
+
+  button.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      setInlineMessage(status, TEXT.locationUnsupported, 'error');
+      return;
+    }
+
+    setInlineMessage(status, TEXT.locationInProgress);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+        input.value = `我的位置 ${formatCoordinates(coords)}`;
+        if (link) {
+          link.href = buildMapMarkerUrl(coords);
+          link.removeAttribute('hidden');
+        }
+        setInlineMessage(status, TEXT.locationSuccess, 'success');
+      },
+      () => {
+        setInlineMessage(status, TEXT.locationFailed, 'error');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  });
+}
+
 async function loadRecordPage() {
   const avatarRow = document.querySelector('[data-render="avatars"]');
   if (avatarRow) {
@@ -765,6 +868,8 @@ async function loadRecordPage() {
   if (dateInput && !dateInput.value) {
     dateInput.value = new Date().toISOString().slice(0, 10);
   }
+
+  bindLocationTools();
 
   const form = document.querySelector('[data-record-form]');
   const message = document.querySelector('[data-record-message]');
@@ -806,6 +911,45 @@ async function resolveRequestedActivityId(rawActivityId) {
 
   const activities = await loadActivities();
   return activities[0]?.id ?? null;
+}
+
+function insertAtCursor(input, value) {
+  if (!input) {
+    return;
+  }
+
+  const start = input.selectionStart ?? input.value.length;
+  const end = input.selectionEnd ?? input.value.length;
+  input.value = `${input.value.slice(0, start)}${value}${input.value.slice(end)}`;
+  const nextPosition = start + value.length;
+  input.focus();
+  input.setSelectionRange(nextPosition, nextPosition);
+}
+
+function collectCommentBody(input, gifInput) {
+  const text = input?.value.trim() || '';
+  const gifUrl = gifInput?.value.trim() || '';
+  return [text, gifUrl].filter(Boolean).join('\n');
+}
+
+function bindCommentTools(form) {
+  const input = form?.querySelector('[name="comment_body"]');
+  const gifInput = form?.querySelector('[name="gif_url"]');
+  const emojiButtons = form?.querySelectorAll('[data-emoji]');
+
+  emojiButtons?.forEach((button) => {
+    button.addEventListener('click', () => {
+      insertAtCursor(input, button.dataset.emoji || '');
+    });
+  });
+
+  gifInput?.addEventListener('change', () => {
+    if (gifInput.value && !isGifUrl(gifInput.value)) {
+      gifInput.setCustomValidity('请粘贴以 .gif 结尾的图片链接');
+    } else {
+      gifInput.setCustomValidity('');
+    }
+  });
 }
 
 async function loadDetailPage() {
@@ -858,7 +1002,10 @@ async function loadDetailPage() {
 
   const form = document.querySelector('[data-comment-form]');
   const input = document.querySelector('[name="comment_body"]');
+  const gifInput = document.querySelector('[name="gif_url"]');
   const message = document.querySelector('[data-comment-message]');
+
+  bindCommentTools(form);
 
   if (!form || !input || !resolvedActivityId) {
     return;
@@ -867,7 +1014,7 @@ async function loadDetailPage() {
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const body = input.value.trim();
+    const body = collectCommentBody(input, gifInput);
     if (!body) {
       return;
     }
@@ -876,6 +1023,9 @@ async function loadDetailPage() {
       await submitComment(resolvedActivityId, body);
       setInlineMessage(message, TEXT.commentSuccess, 'success');
       input.value = '';
+      if (gifInput) {
+        gifInput.value = '';
+      }
 
       const refreshed = await loadActivityDetail(resolvedActivityId);
       if (commentsTarget) {

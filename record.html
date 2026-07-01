@@ -51,6 +51,16 @@
           <div class="location-field">
             <span class="material-symbols-outlined">location_on</span>
             <input id="location" name="location" type="text" value="Sarah 的公寓" placeholder="添加位置" />
+            <button class="location-button" type="button" data-use-location aria-label="使用当前位置" title="使用当前位置">
+              <span class="material-symbols-outlined">my_location</span>
+            </button>
+          </div>
+          <div class="location-actions">
+            <a class="map-link" href="https://ditu.amap.com/search?query=Sarah%20%E7%9A%84%E5%85%AC%E5%AF%93" target="_blank" rel="noreferrer" data-map-link>
+              <span class="material-symbols-outlined">map</span>
+              打开地图
+            </a>
+            <p class="form-message" data-location-status></p>
           </div>
         </section>
 

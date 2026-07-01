@@ -69,13 +69,16 @@ test('site module renders score and settlement markup from activity detail data'
   const module = await import(pathToFileURL(path.join(root, 'assets/js/site.js')).href + `?detail-render=${Date.now()}`);
   assert.equal(typeof module.renderScoreRows, 'function');
   assert.equal(typeof module.renderSettlementCards, 'function');
+  assert.equal(module.formatCurrency(42.5), '+¥42.50');
+  assert.equal(module.formatCurrency(-15), '-¥15.00');
+  assert.equal(module.formatCurrency(0), '¥0.00');
 
   const scoresHtml = module.renderScoreRows([
     { member_name: 'Alex', score_delta: 80, is_winner: 1 },
     { member_name: 'Sarah', score_delta: -20, is_winner: 0 }
   ]);
   assert.match(scoresHtml, /Alex/);
-  assert.match(scoresHtml, /\+\$80\.00/);
+  assert.match(scoresHtml, /\+¥80\.00/);
   assert.match(scoresHtml, /detail-score__row--winner/);
 
   const settlementsHtml = module.renderSettlementCards([
@@ -83,8 +86,24 @@ test('site module renders score and settlement markup from activity detail data'
   ]);
   assert.match(settlementsHtml, /Sarah/);
   assert.match(settlementsHtml, /Alex/);
-  assert.match(settlementsHtml, /\$20\.00/);
+  assert.match(settlementsHtml, /¥20\.00/);
   assert.match(settlementsHtml, /Snacks/);
+});
+
+test('site module supports map links and rich comment rendering', async () => {
+  const module = await import(pathToFileURL(path.join(root, 'assets/js/site.js')).href + `?rich-comment=${Date.now()}`);
+  assert.equal(typeof module.buildMapSearchUrl, 'function');
+  assert.equal(typeof module.buildMapMarkerUrl, 'function');
+  assert.equal(typeof module.renderCommentBody, 'function');
+
+  assert.match(module.buildMapSearchUrl('Sarah 的公寓'), /Sarah%20%E7%9A%84%E5%85%AC%E5%AF%93/);
+  assert.match(module.buildMapMarkerUrl({ latitude: 31.2304, longitude: 121.4737 }), /121\.473700,31\.230400/);
+
+  const html = module.renderCommentBody('今晚太好笑了 😄\nhttps://media.example.com/win.gif');
+  assert.match(html, /😄/);
+  assert.match(html, /comment-gif/);
+  assert.match(html, /https:\/\/media\.example\.com\/win\.gif/);
+  assert.doesNotMatch(html, /<script/);
 });
 
 test('frontend files include api integration hooks', () => {
