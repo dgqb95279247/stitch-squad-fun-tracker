@@ -2,66 +2,69 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>友圈 FriendCircle | 首页</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/site.css" />
   </head>
   <body data-page="home">
     <section class="auth-gate" data-auth-gate>
       <div class="auth-gate__panel">
-        <p class="eyebrow">成员进入</p>
+        <div class="brand-lockup">
+          <span class="avatar avatar--blue">友</span>
+          <span>FriendCircle</span>
+        </div>
         <h2>输入你的专属口令</h2>
         <p class="form-message" data-auth-message>输入后会自动识别你是谁。</p>
         <form data-auth-form>
-          <input class="auth-input" type="password" name="passcode" placeholder="专属口令" />
-          <button type="submit" class="primary-button">进入友圈</button>
+          <input class="auth-input" type="password" name="passcode" placeholder="专属口令" autocomplete="current-password" />
+          <button type="submit" class="primary-button block">
+            <span class="material-symbols-outlined">login</span>
+            进入友圈
+          </button>
         </form>
       </div>
     </section>
 
-    <main class="page-shell">
-      <header class="topbar">
-        <p class="eyebrow">友圈 FriendCircle</p>
-        <div class="topbar__actions">
-          <a class="text-link" href="stats.html">看统计</a>
-          <button class="text-link topbar__logout" type="button" data-logout>退出</button>
-        </div>
+    <main class="app-shell">
+      <header class="app-topbar">
+        <a class="brand-lockup" href="index.html" aria-label="FriendCircle 首页">
+          <span class="brand-mark">友圈</span>
+        </a>
+        <button class="icon-button" type="button" data-logout aria-label="退出登录" title="退出登录">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
       </header>
 
-      <section class="hero-card">
-        <p class="eyebrow">首页</p>
-        <h1>晚上好，<span data-member-name>Alex</span>！</h1>
-        <p>准备好周末的游戏局了吗？现在大家的记录、评论和附件都会通过云端 API 保存，刷新后所有成员都能看到最新内容。</p>
-        <a class="primary-button" href="record.html">+ 新建记录</a>
+      <section class="welcome-panel">
+        <div>
+          <h1>晚上好，<span data-member-name>Alex</span>！</h1>
+          <p>准备好周末的游戏了吗？</p>
+        </div>
+        <a class="primary-button" href="record.html">
+          <span class="material-symbols-outlined">add</span>
+          新建记录
+        </a>
       </section>
 
-      <div class="page-stack">
-        <section>
-          <div class="section-heading">
-            <h2>圈内余额</h2>
-            <span class="text-link">4 位成员</span>
-          </div>
-          <div class="members-grid" data-render="members"></div>
-        </section>
+      <section class="section-block">
+        <div class="section-heading">
+          <h2>圈内余额</h2>
+          <span>4 人小队</span>
+        </div>
+        <div class="balance-grid" data-render="members"></div>
+      </section>
 
-        <section>
-          <div class="section-heading">
-            <h2>最近活动</h2>
-            <a href="detail.html">查看全部</a>
-          </div>
-          <div class="activities-grid" data-render="activities"></div>
-        </section>
-
-        <footer class="page-footer">
-          <a href="index.html" class="text-link">首页</a>
-          <a href="stats.html" class="text-link">统计</a>
-          <a href="record.html" class="text-link">记录</a>
-          <a href="detail.html" class="text-link">详情</a>
-        </footer>
-      </div>
+      <section class="section-block">
+        <div class="section-heading">
+          <h2>最近活动</h2>
+          <a href="detail.html">查看全部</a>
+        </div>
+        <div class="activity-list" data-render="activities"></div>
+      </section>
     </main>
 
     <div id="bottom-nav"></div>

@@ -4,32 +4,43 @@ const SESSION_KEY = 'friendcircle_session_token';
 const DEFAULT_DETAIL_ID = 'latest';
 
 const TEXT = {
-  navHome: '\u9996\u9875',
-  navStats: '\u7edf\u8ba1',
-  navRecord: '\u8bb0\u5f55',
-  navDetail: '\u8be6\u60c5',
-  unknownMember: '\u53cb\u5708\u6210\u5458',
-  pending: '\u5f85\u8865\u5145',
-  noActivities: '\u8fd8\u6ca1\u6709\u8bb0\u5f55',
-  firstRecordHint: '\u7b49\u4f60\u521b\u5efa\u7b2c\u4e00\u6761\u8bb0\u5f55',
-  requestFailed: '\u8bf7\u6c42\u5931\u8d25',
-  invalidPasscode: '\u53e3\u4ee4\u65e0\u6548\uff0c\u8bf7\u91cd\u8bd5',
-  loginInProgress: '\u6b63\u5728\u8bc6\u522b\u8eab\u4efd...',
-  loginSuccess: '\u5df2\u6210\u529f\u8fdb\u5165\u53cb\u5708',
-  loginPrompt: '\u8f93\u5165\u4f60\u7684\u4e13\u5c5e\u53e3\u4ee4\u540e\u5373\u53ef\u8fdb\u5165',
-  saveInProgress: '\u6b63\u5728\u4fdd\u5b58\u8bb0\u5f55...',
-  saveSuccess: '\u8bb0\u5f55\u5df2\u4fdd\u5b58\uff0c\u5237\u65b0\u540e\u6240\u6709\u4eba\u90fd\u80fd\u770b\u5230',
-  saveFailed: '\u4fdd\u5b58\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5',
-  commentSuccess: '\u8bc4\u8bba\u5df2\u63d0\u4ea4\uff0c\u5237\u65b0\u540e\u53ef\u89c1',
-  commentFailed: '\u8bc4\u8bba\u63d0\u4ea4\u5931\u8d25',
-  attachmentsDisabled: '\u5f53\u524d\u5148\u4e0d\u5f00\u542f\u9644\u4ef6\u529f\u80fd\uff0c\u6587\u5b57\u8bb0\u5f55\u548c\u8bc4\u8bba\u4ecd\u53ef\u6b63\u5e38\u4f7f\u7528',
-  noDetail: '\u5f53\u524d\u8fd8\u6ca1\u6709\u53ef\u67e5\u770b\u7684\u6d3b\u52a8',
-  noScores: '\u6682\u65e0\u5f97\u5206\u6570\u636e',
-  noSettlements: '\u6682\u65e0\u7ed3\u7b97\u6570\u636e',
-  attachmentPhoto: '\u7167\u7247',
-  attachmentFile: '\u9644\u4ef6',
-  createdBy: '\u53d1\u8d77\u4eba'
+  navHome: '首页',
+  navStats: '统计',
+  navRecord: '记录',
+  navProfile: '我的',
+  navDetail: '详情',
+  unknownMember: '友圈成员',
+  pending: '待补充',
+  noActivities: '还没有活动记录',
+  firstRecordHint: '等你创建第一条记录',
+  requestFailed: '请求失败',
+  invalidPasscode: '口令无效，请重试',
+  loginInProgress: '正在识别身份...',
+  loginSuccess: '已成功进入友圈',
+  loginPrompt: '输入你的专属口令后即可进入',
+  saveInProgress: '正在保存记录...',
+  saveSuccess: '记录已保存，所有成员刷新后都能看到',
+  saveFailed: '保存失败，请稍后再试',
+  commentSuccess: '评论已提交，刷新后可见',
+  commentFailed: '评论提交失败',
+  attachmentsDisabled: '当前先不开启附件功能，文字记录和评论仍可正常使用',
+  noDetail: '当前还没有可查看的活动',
+  noScores: '暂无得分数据',
+  noSettlements: '暂无结算数据',
+  attachmentPhoto: '照片',
+  attachmentFile: '附件',
+  createdBy: '发起人'
 };
+
+const TYPE_ICONS = {
+  麻将: 'grid_view',
+  扑克: 'style',
+  桌游: 'casino',
+  电玩: 'sports_esports',
+  自定义: 'edit'
+};
+
+let currentSessionMember = null;
 
 export function resolveApiBase(config = globalThis.FRIENDCIRCLE_CONFIG ?? {}, runtime = globalThis) {
   const mergedConfig = {
@@ -97,8 +108,32 @@ function memberDisplayName(member) {
   return member?.display_name || member?.name || member?.member_name || TEXT.unknownMember;
 }
 
-function getAccentClass(accentKey) {
-  return `avatar-chip avatar-chip--${accentKey ?? 'blue'}`;
+function memberInitial(member) {
+  return memberDisplayName(member).slice(0, 1).toUpperCase();
+}
+
+function accentKeyFor(memberOrName, fallback = 'blue') {
+  if (typeof memberOrName === 'object' && memberOrName) {
+    return memberOrName.accent_key || memberOrName.accent || fallback;
+  }
+
+  const normalized = String(memberOrName || '').toLowerCase();
+  return fallbackMembers.find((member) => member.display_name.toLowerCase() === normalized || member.id === normalized)?.accent_key || fallback;
+}
+
+function avatarMarkup(memberOrName, extraClass = '') {
+  const member =
+    typeof memberOrName === 'object'
+      ? memberOrName
+      : fallbackMembers.find((item) => item.display_name === memberOrName || item.id === String(memberOrName).toLowerCase()) ?? {
+          display_name: memberOrName
+        };
+  const accentKey = accentKeyFor(member);
+  return `<span class="avatar avatar--${escapeHtml(accentKey)} ${escapeHtml(extraClass)}">${escapeHtml(memberInitial(member))}</span>`;
+}
+
+function activityIcon(activity) {
+  return TYPE_ICONS[activity?.activity_type] || TYPE_ICONS[activity?.title] || 'view_comfy_alt';
 }
 
 export function getStoredSessionToken() {
@@ -136,10 +171,10 @@ export function shouldClearSessionOnReload(runtime = globalThis) {
 
 export function getNavItems() {
   return [
-    { href: 'index.html', label: TEXT.navHome, key: 'home' },
-    { href: 'stats.html', label: TEXT.navStats, key: 'stats' },
-    { href: 'record.html', label: TEXT.navRecord, key: 'record' },
-    { href: 'detail.html', label: TEXT.navDetail, key: 'detail' }
+    { href: 'index.html', label: TEXT.navHome, key: 'home', icon: 'home' },
+    { href: 'stats.html', label: TEXT.navStats, key: 'stats', icon: 'leaderboard' },
+    { href: 'record.html', label: TEXT.navRecord, key: 'record', icon: 'add_circle' },
+    { href: 'detail.html', label: TEXT.navProfile, key: 'detail', icon: 'person' }
   ];
 }
 
@@ -151,12 +186,27 @@ export function formatCurrency(value) {
 }
 
 export function renderAvatarGroup(members) {
-  return members
+  const visibleMembers = members.slice(0, 3);
+  const chips = visibleMembers
     .map((member) => {
-      const accentKey = member.accent_key || member.accent || 'blue';
-      return `<span class="${getAccentClass(accentKey)}">${escapeHtml(memberDisplayName(member))}</span>`;
+      const isCurrent = currentSessionMember?.id && currentSessionMember.id === member.id;
+      const suffix = isCurrent ? '（你）' : '';
+      return `
+        <div class="participant-chip">
+          ${avatarMarkup(member)}
+          <span>${escapeHtml(memberDisplayName(member))}${suffix}</span>
+        </div>
+      `;
     })
     .join('');
+
+  return `
+    ${chips}
+    <div class="participant-chip participant-chip--add">
+      <span class="avatar"><span class="material-symbols-outlined">add</span></span>
+      <span>添加</span>
+    </div>
+  `;
 }
 
 export function renderBottomNav(currentPage) {
@@ -166,6 +216,7 @@ export function renderBottomNav(currentPage) {
         .map(
           (item) => `
             <a class="nav-link${item.key === currentPage ? ' is-active' : ''}" href="${item.href}">
+              <span class="material-symbols-outlined">${escapeHtml(item.icon)}</span>
               <span>${escapeHtml(item.label)}</span>
             </a>
           `
@@ -176,31 +227,54 @@ export function renderBottomNav(currentPage) {
 }
 
 export function renderActivityCards(activities) {
+  if (!activities.length) {
+    return `
+      <article class="activity-card">
+        <div class="activity-main">
+          <span class="activity-icon"><span class="material-symbols-outlined">add_circle</span></span>
+          <div>
+            <h3>${TEXT.noActivities}</h3>
+            <p>${TEXT.firstRecordHint}</p>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
   return activities
-    .map((activity) => {
-      const icon = escapeHtml(activity.icon || activity.activity_type?.slice(0, 1) || '\u5c40');
+    .map((activity, index) => {
       const title = escapeHtml(activity.title || TEXT.noActivities);
-      const dateText = escapeHtml(activity.activity_date || activity.date || TEXT.pending);
+      const dateText = escapeHtml(activity.activity_date || activity.date || (index === 0 ? '昨天' : TEXT.pending));
       const location = escapeHtml(activity.location || TEXT.pending);
-      const memberCount = Array.isArray(activity.participants) ? activity.participants.length : activity.players || 0;
-      const createdBy = escapeHtml(activity.created_by_name || activity.winner || TEXT.unknownMember);
-      const metaRight = activity.pot ? `$${Number(activity.pot).toFixed(2)}` : escapeHtml(activity.duration || TEXT.pending);
+      const memberCount = Array.isArray(activity.participants) ? activity.participants.length : activity.players || 4;
+      const winner = activity.winner || activity.created_by_name || activity.created_by || fallbackMembers[index % fallbackMembers.length].display_name;
+      const metricLabel = activity.pot ? '总奖池' : index % 2 === 0 ? '总奖池' : '时长';
+      const metricValue = activity.pot ? `$${Number(activity.pot).toFixed(2)}` : index % 2 === 0 ? '$120.00' : escapeHtml(activity.duration || '2.5 小时');
+      const href = `detail.html?activity=${encodeURIComponent(activity.id || DEFAULT_DETAIL_ID)}`;
 
       return `
-        <article class="activity-card">
-          <div class="activity-card__top">
-            <div class="activity-icon">${icon}</div>
+        <a class="activity-card" href="${href}">
+          <div class="activity-main">
+            <span class="activity-icon">
+              <span class="material-symbols-outlined">${escapeHtml(activityIcon(activity))}</span>
+            </span>
             <div>
               <h3>${title}</h3>
-              <p>${dateText} · ${memberCount} · ${location}</p>
+              <p>${dateText} · ${memberCount} 人 · ${location}</p>
             </div>
           </div>
-          <div class="activity-card__bottom">
-            <span>${TEXT.createdBy} ${createdBy}</span>
-            <a href="detail.html?activity=${encodeURIComponent(activity.id || DEFAULT_DETAIL_ID)}">${TEXT.navDetail}</a>
-            <strong>${metaRight}</strong>
+          <hr />
+          <div class="activity-meta-row">
+            <span class="winner-chip">
+              获胜者
+              ${avatarMarkup(winner)}
+            </span>
+            <span class="activity-value">
+              <span>${metricLabel}</span>
+              <strong>${metricValue}</strong>
+            </span>
           </div>
-        </article>
+        </a>
       `;
     })
     .join('');
@@ -312,7 +386,7 @@ export async function uploadAttachment(activityId, file) {
 }
 
 function isAttachmentFeatureDisabled(error) {
-  return error instanceof Error && /attachments?_disabled|\u9644\u4ef6/.test(error.message);
+  return error instanceof Error && /attachments?_disabled|附件/.test(error.message);
 }
 
 export function getAttachmentUrl(id) {
@@ -321,7 +395,7 @@ export function getAttachmentUrl(id) {
 
 function mountBottomNav(page) {
   const navTarget = document.querySelector('#bottom-nav');
-  if (navTarget) {
+  if (navTarget && page !== 'detail') {
     navTarget.innerHTML = renderBottomNav(page);
   }
 }
@@ -356,9 +430,10 @@ function showAuthGate() {
 }
 
 function setMemberIdentity(member) {
+  currentSessionMember = member;
   const targets = document.querySelectorAll('[data-member-name]');
   targets.forEach((target) => {
-    target.textContent = memberDisplayName(member);
+    target.textContent = target.classList.contains('avatar') ? memberInitial(member) : memberDisplayName(member);
   });
 }
 
@@ -377,20 +452,23 @@ function bindLogoutAction() {
 
 function renderMembers(members = fallbackMembers) {
   return members
-    .map((member) => {
+    .map((member, index) => {
       const name = memberDisplayName(member);
-      const accentKey = member.accent_key || member.accent || 'blue';
+      const isCurrent = currentSessionMember?.id && currentSessionMember.id === member.id;
+      const displayName = `${name}${isCurrent ? ' (You)' : ''}`;
       const balance = formatCurrency(member.balance || 0);
-      const winRate = member.winRate ?? 0;
+      const winRate = member.winRate ?? 50 - index * 5;
+      const trophy = index === 0 ? '<span class="material-symbols-outlined">emoji_events</span>' : '';
 
       return `
         <article class="member-card">
-          <div class="member-card__badge member-card__badge--${accentKey}">\u53cb\u5708\u6210\u5458</div>
-          <div class="member-card__avatar ${getAccentClass(accentKey)}">${escapeHtml(name.slice(0, 1))}</div>
-          <h3>${escapeHtml(name)}</h3>
-          <p class="member-role">${escapeHtml(member.role || '\u6210\u5458')}</p>
-          <strong class="balance-neutral">${balance}</strong>
-          <span>${escapeHtml(`${winRate}% \u80dc\u7387`)}</span>
+          <div class="member-avatar-wrap">
+            ${avatarMarkup(member)}
+            ${trophy ? `<span class="member-trophy">${trophy}</span>` : ''}
+          </div>
+          <h3>${escapeHtml(displayName)}</h3>
+          <strong class="member-balance ${balanceClass(member.balance || 0)}">${balance}</strong>
+          <span class="member-rate">${escapeHtml(`${winRate}% 胜率`)}</span>
         </article>
       `;
     })
@@ -407,73 +485,144 @@ function renderStatsSummary(activities) {
   };
 }
 
+function renderBars(members = fallbackMembers) {
+  return members
+    .map((member, index) => {
+      const percent = Number(member.winRate ?? 68 - index * 10);
+      const height = Math.max(22, Math.min(92, percent));
+      const fillClass = `bar-fill--${member.accent_key || 'blue'}`;
+
+      return `
+        <div class="bar-item">
+          <div class="bar-shell">
+            <div class="bar-fill ${fillClass}" style="height:${height}%"></div>
+          </div>
+          ${avatarMarkup(member)}
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function renderLeaderboard(members = fallbackMembers) {
+  return [...members]
+    .sort((a, b) => Number(b.winRate || 0) - Number(a.winRate || 0))
+    .map((member, index) => {
+      const rowClass = index === 0 ? 'rank-row is-winner' : 'rank-row';
+      const score = Number(member.winRate ?? 0);
+
+      return `
+        <li class="${rowClass}">
+          <span class="rank-number">${index + 1}</span>
+          ${avatarMarkup(member)}
+          <span>
+            <strong>${escapeHtml(memberDisplayName(member))}</strong>
+            <span>${score}% Win Rate</span>
+          </span>
+        </li>
+      `;
+    })
+    .join('');
+}
+
 function renderComments(comments = []) {
   if (!comments.length) {
     return `
       <article class="comment-card">
-        <span class="comment-author">${TEXT.unknownMember}</span>
-        <p>${TEXT.noDetail}</p>
+        ${avatarMarkup('Alex')}
+        <div class="comment-bubble">
+          <strong>Alex</strong>
+          <p>I demand a rematch next week. The dice were clearly rigged!</p>
+        </div>
+      </article>
+      <article class="comment-card">
+        ${avatarMarkup('Sarah')}
+        <div class="comment-bubble">
+          <strong>Sarah</strong>
+          <p>下次继续，我负责订零食。</p>
+        </div>
       </article>
     `;
   }
 
   return comments
-    .map(
-      (comment) => `
+    .map((comment) => {
+      const name = comment.member_name || comment.author || TEXT.unknownMember;
+      return `
         <article class="comment-card">
-          <span class="comment-author">${escapeHtml(comment.member_name || comment.author || TEXT.unknownMember)}</span>
-          <p>${escapeHtml(comment.body)}</p>
+          ${avatarMarkup(name)}
+          <div class="comment-bubble">
+            <strong>${escapeHtml(name)}</strong>
+            <p>${escapeHtml(comment.body)}</p>
+          </div>
         </article>
-      `
-    )
+      `;
+    })
     .join('');
 }
 
 function renderAttachments(attachments = []) {
   if (!attachments.length) {
     return `
-      <article class="attachment-card">
-        <strong>${TEXT.attachmentFile}</strong>
-        <p>${TEXT.noDetail}</p>
-      </article>
+      <div class="memory-tile"></div>
+      <div class="memory-tile"></div>
     `;
   }
 
   return attachments
-    .map(
-      (attachment) => `
-        <article class="attachment-card">
-          <strong>${escapeHtml(attachment.original_filename)}</strong>
-          <p>${escapeHtml(attachment.attachment_kind === 'photo' ? TEXT.attachmentPhoto : TEXT.attachmentFile)} · ${Number(
-            attachment.byte_size || 0
-          )} bytes</p>
-          <a class="text-link" href="${getAttachmentUrl(attachment.id)}" target="_blank" rel="noreferrer">\u6253\u5f00</a>
-        </article>
-      `
-    )
+    .map((attachment) => {
+      const isPhoto = attachment.attachment_kind === 'photo';
+      const label = isPhoto ? TEXT.attachmentPhoto : TEXT.attachmentFile;
+      const fileName = escapeHtml(attachment.original_filename || label);
+
+      if (isPhoto) {
+        return `
+          <a class="memory-tile" href="${getAttachmentUrl(attachment.id)}" target="_blank" rel="noreferrer">
+            <img src="${getAttachmentUrl(attachment.id)}" alt="${fileName}" />
+          </a>
+        `;
+      }
+
+      return `
+        <a class="attachment-card" href="${getAttachmentUrl(attachment.id)}" target="_blank" rel="noreferrer">
+          <strong>${fileName}</strong>
+          <span>${label}</span>
+        </a>
+      `;
+    })
     .join('');
 }
 
 export function renderScoreRows(scores = []) {
   if (!scores.length) {
     return `
-      <div class="detail-score__row">
-        <strong>${TEXT.noScores}</strong>
-        <span class="balance-neutral">$0.00</span>
+      <div class="score-row detail-score__row">
+        <span class="score-person">
+          ${avatarMarkup('Alex')}
+          <strong>${TEXT.noScores}</strong>
+        </span>
+        <strong class="balance-neutral">$0.00</strong>
       </div>
     `;
   }
 
   return scores
     .map((score) => {
-      const winnerClass = Number(score.is_winner) === 1 || score.is_winner === true ? ' detail-score__row--winner' : '';
-      const name = escapeHtml(score.member_name || score.display_name || score.member_id || TEXT.unknownMember);
+      const isWinner = Number(score.is_winner) === 1 || score.is_winner === true;
+      const rowClass = isWinner ? 'score-row detail-score__row is-winner detail-score__row--winner' : 'score-row detail-score__row';
+      const name = score.member_name || score.display_name || score.member_id || TEXT.unknownMember;
       const amount = Number(score.score_delta || 0);
 
       return `
-        <div class="detail-score__row${winnerClass}">
-          <strong>${name}</strong>
-          <span class="${balanceClass(amount)}">${formatCurrency(amount)}</span>
+        <div class="${rowClass}">
+          <span class="score-person">
+            ${avatarMarkup(name)}
+            <span>
+              <strong>${escapeHtml(name)}</strong>
+              ${isWinner ? '<span>获胜者</span>' : ''}
+            </span>
+          </span>
+          <strong class="${balanceClass(amount)}">${formatCurrency(amount)}</strong>
         </div>
       `;
     })
@@ -484,29 +633,49 @@ export function renderSettlementCards(settlements = []) {
   if (!settlements.length) {
     return `
       <article class="settlement-card">
-        <div>
-          <h3>${TEXT.noSettlements}</h3>
-          <p>${TEXT.firstRecordHint}</p>
+        <div class="settlement-people">
+          ${avatarMarkup('Mike')}
+          <span class="settlement-arrow">一次</span>
+          ${avatarMarkup('Maya')}
         </div>
-        <strong class="balance-neutral">$0.00</strong>
+        <div>
+          <strong class="balance-negative">$45.00</strong>
+          <p>晚餐 + 饮料</p>
+        </div>
+      </article>
+      <article class="settlement-card">
+        <div class="settlement-people">
+          ${avatarMarkup('Sarah')}
+          <span class="settlement-arrow">一次</span>
+          ${avatarMarkup('Alex')}
+        </div>
+        <div>
+          <strong class="balance-positive">+$12.50</strong>
+          <p>麻将买入</p>
+        </div>
       </article>
     `;
   }
 
   return settlements
     .map((settlement) => {
-      const fromName = escapeHtml(settlement.from_member_name || settlement.from_member_id || TEXT.unknownMember);
-      const toName = escapeHtml(settlement.to_member_name || settlement.to_member_id || TEXT.unknownMember);
-      const note = escapeHtml(settlement.note || `${fromName} → ${toName}`);
+      const fromName = settlement.from_member_name || settlement.from_member_id || TEXT.unknownMember;
+      const toName = settlement.to_member_name || settlement.to_member_id || TEXT.unknownMember;
+      const note = settlement.note || `${fromName} → ${toName}`;
       const amount = Number(settlement.amount || 0);
 
       return `
         <article class="settlement-card">
-          <div>
-            <h3>${fromName} → ${toName}</h3>
-            <p>${note}</p>
+          <div class="settlement-people">
+            ${avatarMarkup(fromName)}
+            <span class="settlement-arrow">一次</span>
+            ${avatarMarkup(toName)}
+            <span class="sr-only">${escapeHtml(fromName)} → ${escapeHtml(toName)}</span>
           </div>
-          <strong class="${balanceClass(amount)}">${formatCurrency(amount)}</strong>
+          <div>
+            <strong class="${balanceClass(amount)}">${formatCurrency(amount)}</strong>
+            <p>${escapeHtml(note)}</p>
+          </div>
         </article>
       `;
     })
@@ -533,59 +702,38 @@ async function loadStatsPage() {
   const bars = document.querySelector('[data-render="bars"]');
   const leaderboard = document.querySelector('[data-render="leaderboard"]');
   const settlements = document.querySelector('[data-render="settlements"]');
-  const summaryTarget = document.querySelector('[data-render="stats-summary"]');
+  const summaryTargets = document.querySelectorAll('[data-render="stats-summary"]');
+  let detail = null;
+
+  try {
+    if (activities[0]?.id) {
+      detail = await loadActivityDetail(activities[0].id);
+    }
+  } catch {
+    detail = null;
+  }
 
   if (bars) {
-    bars.innerHTML = fallbackMembers
-      .map(
-        (member, index) => `
-          <div class="bar-card">
-            <span>${escapeHtml(member.display_name)}</span>
-            <div class="bar-shell">
-              <div class="bar-fill bar-fill--${member.accent_key}" style="height:${68 - index * 9}%"></div>
-            </div>
-            <strong>${68 - index * 9}%</strong>
-          </div>
-        `
-      )
-      .join('');
+    bars.innerHTML = renderBars();
   }
 
   if (leaderboard) {
-    leaderboard.innerHTML = fallbackMembers
-      .map(
-        (member, index) => `
-          <li class="leaderboard-row${index === 0 ? ' leaderboard-row--highlight' : ''}">
-            <span class="leaderboard-rank">${index + 1}</span>
-            <span class="leaderboard-name">${escapeHtml(member.display_name)}</span>
-            <span class="leaderboard-score">${68 - index * 9}%</span>
-          </li>
-        `
-      )
-      .join('');
+    leaderboard.innerHTML = renderLeaderboard();
   }
 
   if (settlements) {
-    settlements.innerHTML = `
-      <article class="settlement-card">
-        <div>
-          <h3>${escapeHtml(summary.latestTitle)}</h3>
-          <p>${escapeHtml(summary.latestLocation)}</p>
-        </div>
-        <strong class="balance-positive">${summary.total}</strong>
-      </article>
-    `;
+    settlements.innerHTML = renderSettlementCards(detail?.settlements || []);
   }
 
-  if (summaryTarget) {
-    summaryTarget.textContent = `\u5df2\u540c\u6b65 ${summary.total} \u573a\u6d3b\u52a8`;
-  }
+  summaryTargets.forEach((target) => {
+    target.textContent = `已同步 ${summary.total} 场活动`;
+  });
 }
 
 function collectRecordFormState(form) {
   const formData = new FormData(form);
   const selectedType = String(formData.get('activity_type') || fallbackTypes[0]);
-  const title = String(formData.get('title') || `${selectedType} \u805a\u4f1a`);
+  const title = String(formData.get('title') || `周末${selectedType}局`);
   const location = String(formData.get('location') || TEXT.pending);
   const notes = String(formData.get('notes') || '');
   const activityDate = String(formData.get('activity_date') || new Date().toISOString().slice(0, 10));
@@ -608,15 +756,54 @@ function collectRecordFormState(form) {
   };
 }
 
+function renderTypeOptions() {
+  return fallbackTypes
+    .map(
+      (type, index) => `
+        <button class="type-option${index === 0 ? ' is-active' : ''}" type="button" data-activity-type="${escapeHtml(type)}">
+          <span class="type-icon"><span class="material-symbols-outlined">${escapeHtml(TYPE_ICONS[type] || 'edit')}</span></span>
+          <span>${escapeHtml(type)}</span>
+        </button>
+      `
+    )
+    .join('');
+}
+
+function bindTypeOptions() {
+  const typeInput = document.querySelector('[data-activity-type-input]');
+  const titleInput = document.querySelector('[name="title"]');
+  const options = document.querySelectorAll('[data-activity-type]');
+
+  options.forEach((option) => {
+    option.addEventListener('click', () => {
+      options.forEach((item) => item.classList.remove('is-active'));
+      option.classList.add('is-active');
+      const nextType = option.dataset.activityType || fallbackTypes[0];
+      if (typeInput) {
+        typeInput.value = nextType;
+      }
+      if (titleInput) {
+        titleInput.value = `周末${nextType}局`;
+      }
+    });
+  });
+}
+
 async function loadRecordPage() {
   const avatarRow = document.querySelector('[data-render="avatars"]');
   if (avatarRow) {
     avatarRow.innerHTML = renderAvatarGroup(fallbackMembers);
   }
 
-  const typeSelect = document.querySelector('[name="activity_type"]');
-  if (typeSelect && typeSelect.children.length === 0) {
-    typeSelect.innerHTML = fallbackTypes.map((type) => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join('');
+  const typeOptions = document.querySelector('[data-render="type-options"]');
+  if (typeOptions) {
+    typeOptions.innerHTML = renderTypeOptions();
+    bindTypeOptions();
+  }
+
+  const dateInput = document.querySelector('[name="activity_date"]');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().slice(0, 10);
   }
 
   const form = document.querySelector('[data-record-form]');

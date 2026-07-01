@@ -45,16 +45,18 @@ test('site scaffold files exist', () => {
 
 test('shared stylesheet defines core design tokens and responsive layout hooks', () => {
   const css = fs.readFileSync(path.join(root, 'assets/css/site.css'), 'utf8');
-  assert.match(css, /--color-primary:\s*#0d63d6/i);
+  assert.match(css, /--color-primary:\s*#0058be/i);
   assert.match(css, /--font-display:\s*'Quicksand'/i);
-  assert.match(css, /--shadow-card:/i);
+  assert.match(css, /--shadow-soft:/i);
   assert.match(css, /\.bottom-nav/);
-  assert.match(css, /\.page-shell/);
-  assert.match(css, /\.hero-card/);
+  assert.match(css, /\.app-shell/);
+  assert.match(css, /\.welcome-panel/);
+  assert.match(css, /\.rank-panel/);
+  assert.match(css, /\.type-strip/);
   assert.match(css, /\.card/);
   assert.match(css, /\.auth-gate/);
   assert.match(css, /\.form-message/);
-  assert.match(css, /@media\s*\(min-width:\s*768px\)/);
+  assert.match(css, /@media\s*\(min-width:\s*860px\)/);
 });
 
 test('readme explains local preview and deployment flows', () => {
