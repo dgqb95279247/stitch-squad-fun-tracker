@@ -8,6 +8,7 @@ import {
   findMemberByPasscodeHash,
   getActivityById,
   getAttachmentById,
+  getDefaultMember,
   getSessionByTokenHash,
   listActivities,
   revokeSession
@@ -65,6 +66,33 @@ async function requireSession(request, envConfig) {
     },
     tokenHash
   };
+}
+
+async function getOptionalSession(request, envConfig) {
+  const token = getBearerToken(request);
+  if (!token) {
+    return null;
+  }
+
+  try {
+    return await requireSession(request, envConfig);
+  } catch {
+    return null;
+  }
+}
+
+async function getPublicWriteMember(request, envConfig) {
+  const session = await getOptionalSession(request, envConfig);
+  if (session?.member) {
+    return session.member;
+  }
+
+  const member = await getDefaultMember(envConfig.DB);
+  if (!member) {
+    throw new Error('没有可用的默认成员');
+  }
+
+  return member;
 }
 
 function buildAttachmentKey(activityId, attachmentKind, filename) {
@@ -129,18 +157,18 @@ async function handleGetActivity(envConfig, activityId) {
 
 async function handleCreateActivity(request, envConfig) {
   try {
-    const session = await requireSession(request, envConfig);
+    const member = await getPublicWriteMember(request, envConfig);
     const payload = await request.json();
-    const activity = await createActivityGraph(envConfig.DB, payload, session.member.id);
+    const activity = await createActivityGraph(envConfig.DB, payload, member.id);
     return jsonOk({ activity }, { status: 201 });
   } catch (error) {
-    return jsonError('unauthorized', error.message, 401);
+    return jsonError('create_activity_failed', error.message, 500);
   }
 }
 
 async function handleCreateComment(request, envConfig, activityId) {
   try {
-    const session = await requireSession(request, envConfig);
+    const member = await getPublicWriteMember(request, envConfig);
     const payload = await request.json();
     const body = String(payload?.body || '').trim();
 
@@ -148,10 +176,10 @@ async function handleCreateComment(request, envConfig, activityId) {
       return jsonError('invalid_comment', '评论内容不能为空', 400);
     }
 
-    const comment = await createCommentRecord(envConfig.DB, activityId, session.member.id, body);
+    const comment = await createCommentRecord(envConfig.DB, activityId, member.id, body);
     return jsonOk({ comment }, { status: 201 });
   } catch (error) {
-    return jsonError('unauthorized', error.message, 401);
+    return jsonError('create_comment_failed', error.message, 500);
   }
 }
 

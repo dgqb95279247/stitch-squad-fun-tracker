@@ -11,33 +11,15 @@
     <link rel="stylesheet" href="assets/css/site.css" />
   </head>
   <body data-page="detail">
-    <section class="auth-gate" data-auth-gate>
-      <div class="auth-gate__panel">
-        <div class="brand-lockup">
-          <span class="avatar avatar--blue">友</span>
-          <span>FriendCircle</span>
-        </div>
-        <h2>输入你的专属口令</h2>
-        <p class="form-message" data-auth-message>输入后会自动识别你是谁。</p>
-        <form data-auth-form>
-          <input class="auth-input" type="password" name="passcode" placeholder="专属口令" autocomplete="current-password" />
-          <button type="submit" class="primary-button block">
-            <span class="material-symbols-outlined">login</span>
-            进入友圈
-          </button>
-        </form>
-      </div>
-    </section>
-
     <main class="app-shell app-shell--detail">
       <header class="detail-topbar">
         <a class="icon-button" href="stats.html" aria-label="返回统计">
           <span class="material-symbols-outlined">arrow_back</span>
         </a>
         <h1>活动详情</h1>
-        <button class="icon-button" type="button" data-logout aria-label="退出登录" title="退出登录">
-          <span class="material-symbols-outlined">logout</span>
-        </button>
+        <a class="icon-button" href="record.html" aria-label="新建记录" title="新建记录">
+          <span class="material-symbols-outlined">add_circle</span>
+        </a>
       </header>
 
       <section class="detail-hero">

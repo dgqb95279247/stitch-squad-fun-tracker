@@ -7,17 +7,12 @@ const TEXT = {
   navHome: '首页',
   navStats: '统计',
   navRecord: '记录',
-  navProfile: '我的',
   navDetail: '详情',
   unknownMember: '友圈成员',
   pending: '待补充',
   noActivities: '还没有活动记录',
   firstRecordHint: '等你创建第一条记录',
   requestFailed: '请求失败',
-  invalidPasscode: '口令无效，请重试',
-  loginInProgress: '正在识别身份...',
-  loginSuccess: '已成功进入友圈',
-  loginPrompt: '输入你的专属口令后即可进入',
   saveInProgress: '正在保存记录...',
   saveSuccess: '记录已保存，所有成员刷新后都能看到',
   saveFailed: '保存失败，请稍后再试',
@@ -174,7 +169,7 @@ export function getNavItems() {
     { href: 'index.html', label: TEXT.navHome, key: 'home', icon: 'home' },
     { href: 'stats.html', label: TEXT.navStats, key: 'stats', icon: 'leaderboard' },
     { href: 'record.html', label: TEXT.navRecord, key: 'record', icon: 'add_circle' },
-    { href: 'detail.html', label: TEXT.navProfile, key: 'detail', icon: 'person' }
+    { href: 'detail.html', label: TEXT.navDetail, key: 'detail', icon: 'receipt_long' }
   ];
 }
 
@@ -395,16 +390,8 @@ export function getAttachmentUrl(id) {
 
 function mountBottomNav(page) {
   const navTarget = document.querySelector('#bottom-nav');
-  if (navTarget && page !== 'detail') {
+  if (navTarget) {
     navTarget.innerHTML = renderBottomNav(page);
-  }
-}
-
-function setAuthMessage(message, tone = 'info') {
-  const target = document.querySelector('[data-auth-message]');
-  if (target) {
-    target.textContent = message;
-    target.dataset.tone = tone;
   }
 }
 
@@ -415,38 +402,11 @@ function setInlineMessage(target, message, tone = 'info') {
   }
 }
 
-function hideAuthGate() {
-  const gate = document.querySelector('[data-auth-gate]');
-  if (gate) {
-    gate.setAttribute('hidden', 'hidden');
-  }
-}
-
-function showAuthGate() {
-  const gate = document.querySelector('[data-auth-gate]');
-  if (gate) {
-    gate.removeAttribute('hidden');
-  }
-}
-
 function setMemberIdentity(member) {
   currentSessionMember = member;
   const targets = document.querySelectorAll('[data-member-name]');
   targets.forEach((target) => {
     target.textContent = target.classList.contains('avatar') ? memberInitial(member) : memberDisplayName(member);
-  });
-}
-
-function bindLogoutAction() {
-  const triggers = document.querySelectorAll('[data-logout]');
-  triggers.forEach((trigger) => {
-    trigger.addEventListener('click', async (event) => {
-      event.preventDefault();
-      await logoutCurrentMember();
-      showAuthGate();
-      setAuthMessage(TEXT.loginPrompt);
-      window.location.href = 'index.html';
-    });
   });
 }
 
@@ -954,40 +914,8 @@ async function bootstrapPage() {
   }
 
   const page = document.body.dataset.page;
-  if (shouldClearSessionOnReload()) {
-    clearStoredSessionToken();
-  }
   mountBottomNav(page);
-  bindLogoutAction();
-  showAuthGate();
-
-  const authForm = document.querySelector('[data-auth-form]');
-  if (authForm) {
-    authForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(authForm);
-      const passcode = String(formData.get('passcode') || '').trim();
-      setAuthMessage(TEXT.loginInProgress);
-
-      try {
-        const data = await loginWithPasscode(passcode);
-        hideAuthGate();
-        setMemberIdentity(data?.member);
-        await loadActivePage(page);
-        setAuthMessage(TEXT.loginSuccess, 'success');
-      } catch (error) {
-        setAuthMessage(messageOrFallback(error, TEXT.invalidPasscode), 'error');
-      }
-    });
-  }
-
-  const member = await loadSessionMember();
-  if (!member) {
-    setAuthMessage(TEXT.loginPrompt);
-    return;
-  }
-
-  hideAuthGate();
+  const member = (await loadSessionMember()) || fallbackMembers[0];
   setMemberIdentity(member);
   await loadActivePage(page);
 }

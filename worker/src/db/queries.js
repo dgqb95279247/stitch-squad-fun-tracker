@@ -19,6 +19,30 @@ export async function findMemberByPasscodeHash(DB, passcodeHash) {
   return result ?? null;
 }
 
+export async function getDefaultMember(DB, preferredMemberId = 'alex') {
+  const preferred = await DB.prepare(
+    `select id, slug, display_name, accent_key
+     from members
+     where id = ? and is_active = 1`
+  )
+    .bind(preferredMemberId)
+    .first();
+
+  if (preferred) {
+    return preferred;
+  }
+
+  const fallback = await DB.prepare(
+    `select id, slug, display_name, accent_key
+     from members
+     where is_active = 1
+     order by created_at asc
+     limit 1`
+  ).first();
+
+  return fallback ?? null;
+}
+
 export async function createSessionRecord(DB, memberId, tokenHash, ttlHours = 168) {
   const id = randomId();
   const createdAt = nowIso();

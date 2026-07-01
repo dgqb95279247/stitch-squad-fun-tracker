@@ -33,6 +33,21 @@ test('site module exports page boot helpers', async () => {
   assert.equal(typeof module.submitActivity, 'function');
 });
 
+test('bottom navigation exposes detail as a first-class page', async () => {
+  const module = await import(pathToFileURL(path.join(root, 'assets/js/site.js')).href + `?nav=${Date.now()}`);
+  const items = module.getNavItems();
+  assert.deepEqual(
+    items.map((item) => item.label),
+    ['首页', '统计', '记录', '详情']
+  );
+
+  const html = module.renderBottomNav('detail');
+  assert.match(html, /detail\.html/);
+  assert.match(html, /详情/);
+  assert.match(html, /nav-link is-active/);
+  assert.doesNotMatch(html, /我的/);
+});
+
 test('site module exports attachment helpers', async () => {
   const module = await import(pathToFileURL(path.join(root, 'assets/js/site.js')).href);
   assert.equal(typeof module.uploadAttachment, 'function');
@@ -80,11 +95,11 @@ test('frontend files include api integration hooks', () => {
   }
 });
 
-test('pages expose a logout action hook', () => {
+test('pages do not expose logout controls after passcode removal', () => {
   const files = ['index.html', 'stats.html', 'record.html', 'detail.html'];
   for (const file of files) {
     const content = fs.readFileSync(path.join(root, file), 'utf8');
-    assert.match(content, /data-logout/);
+    assert.doesNotMatch(content, /data-logout/);
   }
 });
 

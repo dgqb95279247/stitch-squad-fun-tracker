@@ -67,6 +67,7 @@ test('schema defines member, session, activity, comment, and attachment tables',
 test('query module exports required data helpers', async () => {
   const module = await import(pathToFileURL(path.join(root, 'worker/src/db/queries.js')).href);
   assert.equal(typeof module.findMemberByPasscodeHash, 'function');
+  assert.equal(typeof module.getDefaultMember, 'function');
   assert.equal(typeof module.createSessionRecord, 'function');
   assert.equal(typeof module.getSessionByTokenHash, 'function');
   assert.equal(typeof module.listActivities, 'function');
@@ -139,6 +140,14 @@ test('worker source declares the expected route surface', () => {
   assert.match(source, /commentMatch = url\.pathname\.match/);
   assert.match(source, /attachmentUploadMatch = url\.pathname\.match/);
   assert.match(source, /attachmentReadMatch = url\.pathname\.match/);
+});
+
+test('worker allows public writes through a default member when no session is present', () => {
+  const source = fs.readFileSync(path.join(root, 'worker/src/index.js'), 'utf8');
+  assert.match(source, /getOptionalSession/);
+  assert.match(source, /getPublicWriteMember/);
+  assert.match(source, /handleCreateActivity[\s\S]*getPublicWriteMember/);
+  assert.match(source, /handleCreateComment[\s\S]*getPublicWriteMember/);
 });
 
 test('cloudflare setup doc explains wrangler, d1, r2, and secrets', () => {

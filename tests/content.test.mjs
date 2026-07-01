@@ -17,13 +17,14 @@ test('each page includes shared asset hooks and boot scripts', () => {
   }
 });
 
-test('all pages include the auth gate shell', () => {
+test('all pages open directly without a passcode gate', () => {
   for (const file of pages) {
     const html = fs.readFileSync(path.join(root, file), 'utf8');
-    assert.match(html, /data-auth-gate/);
-    assert.match(html, /data-auth-form/);
-    assert.match(html, /data-auth-message/);
-    assert.match(html, /type="password"/);
+    assert.doesNotMatch(html, /data-auth-gate/);
+    assert.doesNotMatch(html, /data-auth-form/);
+    assert.doesNotMatch(html, /data-auth-message/);
+    assert.doesNotMatch(html, /type="password"/);
+    assert.doesNotMatch(html, /data-logout/);
   }
 });
 
