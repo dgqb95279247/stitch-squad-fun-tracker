@@ -27,7 +27,6 @@ https://friendcircle-api.1922554788.workers.dev
 ```bash
 wrangler d1 create friendcircle-db
 wrangler secret put SESSION_SECRET
-wrangler secret put ALLOWED_ORIGINS
 ```
 
 Suggested `ALLOWED_ORIGINS` value:
@@ -122,7 +121,7 @@ This project will work without that step. In the current setup:
 - run `wrangler d1 execute ... --remote` for the schema
 - generate hashed member seed SQL and import it remotely
 - run `wrangler secret put SESSION_SECRET`
-- run `wrangler secret put ALLOWED_ORIGINS` when provided
+- keep `ALLOWED_ORIGINS` in [`wrangler.jsonc`](/E:/code/friend/stitch_squad_fun_tracker/wrangler.jsonc) unless you intentionally want to move it to a secret too
 
 If you want the script to first check `wrangler d1 info`, create the database if needed, and update the placeholder `database_id` in [`wrangler.jsonc`](/E:/code/friend/stitch_squad_fun_tracker/wrangler.jsonc), use:
 
@@ -139,3 +138,13 @@ SESSION_SECRET=your-secret ALLOWED_ORIGINS="https://dgqb95279247.github.io,http:
 - D1 schema has been applied
 - The four member passcodes have been seeded
 - If you have not enabled R2 yet, attachment upload will stay disabled, but records and comments still work
+
+## Current verified deployment
+
+- Project site: `https://dgqb95279247.github.io/stitch-squad-fun-tracker/`
+- Worker API: `https://friendcircle-api.1922554788.workers.dev`
+- Verified on 2026-07-01:
+  - passcode login works
+  - shared activity creation works
+  - shared comments work
+  - R2 attachments remain intentionally disabled

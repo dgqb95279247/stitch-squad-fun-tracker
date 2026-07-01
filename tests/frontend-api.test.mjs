@@ -10,9 +10,19 @@ test('site module exports API session helpers', async () => {
   const module = await import(pathToFileURL(path.join(root, 'assets/js/site.js')).href);
   assert.equal(typeof module.getStoredSessionToken, 'function');
   assert.equal(typeof module.storeSessionToken, 'function');
+  assert.equal(typeof module.clearStoredSessionToken, 'function');
   assert.equal(typeof module.resolveApiBase, 'function');
   assert.equal(typeof module.fetchJson, 'function');
   assert.equal(typeof module.loginWithPasscode, 'function');
+});
+
+test('site module clears session on reload', async () => {
+  const module = await import(pathToFileURL(path.join(root, 'assets/js/site.js')).href + `?reload=${Date.now()}`);
+  assert.equal(typeof module.getNavigationType, 'function');
+  assert.equal(typeof module.shouldClearSessionOnReload, 'function');
+  assert.equal(module.getNavigationType({ performance: { getEntriesByType: () => [{ type: 'reload' }] } }), 'reload');
+  assert.equal(module.shouldClearSessionOnReload({ performance: { getEntriesByType: () => [{ type: 'reload' }] } }), true);
+  assert.equal(module.shouldClearSessionOnReload({ performance: { getEntriesByType: () => [{ type: 'navigate' }] } }), false);
 });
 
 test('site module exports page boot helpers', async () => {
@@ -67,6 +77,14 @@ test('frontend files include api integration hooks', () => {
   for (const file of files) {
     const content = fs.readFileSync(path.join(root, file), 'utf8');
     assert.match(content, /api/i);
+  }
+});
+
+test('pages expose a logout action hook', () => {
+  const files = ['index.html', 'stats.html', 'record.html', 'detail.html'];
+  for (const file of files) {
+    const content = fs.readFileSync(path.join(root, file), 'utf8');
+    assert.match(content, /data-logout/);
   }
 });
 

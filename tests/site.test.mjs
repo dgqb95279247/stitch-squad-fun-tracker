@@ -23,7 +23,6 @@ const requiredFiles = [
   'scripts/dev-local.mjs',
   'scripts/setup-remote.mjs',
   'scripts/bootstrap-cloudflare.mjs',
-  '.github/workflows/deploy-pages.yml',
   'README.md',
   'wrangler.jsonc',
   'worker/src/index.js',
@@ -108,11 +107,10 @@ test('pages export script copies the static site into dist', () => {
   assert.match(source, /\.nojekyll/);
 });
 
-test('github pages workflow builds and deploys the dist artifact', () => {
-  const workflow = fs.readFileSync(path.join(root, '.github/workflows/deploy-pages.yml'), 'utf8');
-  assert.match(workflow, /actions\/configure-pages/);
-  assert.match(workflow, /actions\/upload-pages-artifact/);
-  assert.match(workflow, /actions\/deploy-pages/);
-  assert.match(workflow, /npm run build:pages/);
-  assert.match(workflow, /path:\s*dist/);
+test('github pages deploy is documented as branch-based', () => {
+  const workflowPath = path.join(root, '.github/workflows/deploy-pages.yml');
+  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  assert.equal(fs.existsSync(workflowPath), false);
+  assert.match(readme, /Deploy from a branch/);
+  assert.match(readme, /main/);
 });

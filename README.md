@@ -22,12 +22,12 @@ Then open `http://localhost:8000`.
 ## Deploy the static site to GitHub Pages
 
 1. Push the project to GitHub.
-2. Keep the default branch name as `main`, or update [deploy-pages.yml](/E:/code/friend/stitch_squad_fun_tracker/.github/workflows/deploy-pages.yml) if you use another branch.
-3. In GitHub, open `Settings -> Pages`.
-4. Under `Source`, choose `GitHub Actions`.
-5. Push again or run the `Deploy GitHub Pages` workflow manually.
+2. In GitHub, open `Settings -> Pages`.
+3. Under `Source`, choose `Deploy from a branch`.
+4. Select `main` and `/(root)`.
+5. Open the project site at `https://dgqb95279247.github.io/stitch-squad-fun-tracker/`.
 
-The workflow will build a `dist/` folder from the static files and publish it automatically.
+The root `https://dgqb95279247.github.io/` URL is expected to 404 for a project site.
 
 ## Connect the frontend to your Cloudflare Worker
 
@@ -51,6 +51,12 @@ Current intended GitHub Pages origin:
 
 ```text
 https://dgqb95279247.github.io
+```
+
+Current live project site:
+
+```text
+https://dgqb95279247.github.io/stitch-squad-fun-tracker/
 ```
 
 ## Cloudflare backend

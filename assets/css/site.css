@@ -204,6 +204,21 @@ p {
   font-weight: 700;
 }
 
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.topbar__logout {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
 .primary-button {
   display: inline-flex;
   align-items: center;

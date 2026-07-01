@@ -102,23 +102,36 @@ function getAccentClass(accentKey) {
 }
 
 export function getStoredSessionToken() {
-  if (typeof localStorage === 'undefined') {
+  if (typeof sessionStorage === 'undefined') {
     return null;
   }
 
-  return localStorage.getItem(SESSION_KEY);
+  return sessionStorage.getItem(SESSION_KEY);
 }
 
 export function storeSessionToken(token) {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(SESSION_KEY, token);
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.setItem(SESSION_KEY, token);
   }
 }
 
 export function clearStoredSessionToken() {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem(SESSION_KEY);
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.removeItem(SESSION_KEY);
   }
+}
+
+export function getNavigationType(runtime = globalThis) {
+  const navigationEntry = runtime?.performance?.getEntriesByType?.('navigation')?.[0];
+  if (typeof navigationEntry?.type === 'string' && navigationEntry.type) {
+    return navigationEntry.type;
+  }
+
+  return '';
+}
+
+export function shouldClearSessionOnReload(runtime = globalThis) {
+  return getNavigationType(runtime) === 'reload';
 }
 
 export function getNavItems() {
@@ -346,6 +359,19 @@ function setMemberIdentity(member) {
   const targets = document.querySelectorAll('[data-member-name]');
   targets.forEach((target) => {
     target.textContent = memberDisplayName(member);
+  });
+}
+
+function bindLogoutAction() {
+  const triggers = document.querySelectorAll('[data-logout]');
+  triggers.forEach((trigger) => {
+    trigger.addEventListener('click', async (event) => {
+      event.preventDefault();
+      await logoutCurrentMember();
+      showAuthGate();
+      setAuthMessage(TEXT.loginPrompt);
+      window.location.href = 'index.html';
+    });
   });
 }
 
@@ -741,7 +767,11 @@ async function bootstrapPage() {
   }
 
   const page = document.body.dataset.page;
+  if (shouldClearSessionOnReload()) {
+    clearStoredSessionToken();
+  }
   mountBottomNav(page);
+  bindLogoutAction();
   showAuthGate();
 
   const authForm = document.querySelector('[data-auth-form]');
