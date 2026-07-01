@@ -2,3 +2,5 @@ node_modules/
 .wrangler/
 dist/
 dist-upload.zip
+run-*-logs.zip
+NUL
